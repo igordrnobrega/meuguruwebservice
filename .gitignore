@@ -1,0 +1,9 @@
+vendor/*
+composer.lock
+var/*
+*.sublime-project
+*.sublime-workspace
+app/config/parameters.yml
+.DS_Store
+.idea
+.idea/*

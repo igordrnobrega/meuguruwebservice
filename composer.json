@@ -1,0 +1,13 @@
+{
+    "require": {
+        "silex/silex": "~1.1",
+        "twig/twig": "1.*",
+        "symfony/console": "2.4.*",
+        "doctrine/dbal": "2.2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "App": "lib/"
+         }
+    }
+}
