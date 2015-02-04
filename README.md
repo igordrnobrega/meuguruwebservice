@@ -1,14 +1,16 @@
 Meu Guru API
 
 ------------------
-Procura por evento
-url: http://api.meuguru.com.br/event/search
-parametros:
-nome
-estado
-cidade
-segmento
-promotor
-pavilhao
-data_i
-data_f
+<h2>Procura por evento</h2>
+<p>url: http://api.meuguru.com.br/event/search</p>
+<p>parametros:</p>
+<ul>
+    <li>nome</li>
+    <li>estado</li>
+    <li>cidade</li>
+    <li>segmento</li>
+    <li>promotor</li>
+    <li>pavilhao</li>
+    <li>data_i</li>
+    <li>data_f</li>
+</ul>
