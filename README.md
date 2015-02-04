@@ -5,12 +5,29 @@ Meu Guru API
 <p>api: http://api.meuguru.com.br/event/search</p>
 <p>parametros:</p>
 <ul>
-    <li>nome</li>
+    <li>s(nome)</li>
     <li>estado</li>
     <li>cidade</li>
     <li>segmento</li>
     <li>promotor</li>
-    <li>pavilhao</li>
-    <li>data_i</li>
-    <li>data_f</li>
+    <li>local</li>
+    <li>inicio</li>
+    <li>termino</li>
+</ul>
+<p>obs: seguindo mesmos parametros passado pela busca do site</p>
+
+------------------
+<h2>Listar Tipos Fornecedores</h2>
+<p>api: http://api.meuguru.com.br/fornecedores</p>
+<p>parametros:</p>
+<ul>
+    <li>não tem</li>
+</ul>
+
+------------------
+<h2>Listar Tipos Segmentos</h2>
+<p>api: http://api.meuguru.com.br/segmentos</p>
+<p>parametros:</p>
+<ul>
+    <li>não tem</li>
 </ul>
