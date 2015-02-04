@@ -2,7 +2,7 @@ Meu Guru API
 
 ------------------
 <h2>Procura por evento</h2>
-<p>url: http://api.meuguru.com.br/event/search</p>
+<p>api: http://api.meuguru.com.br/event/search</p>
 <p>parametros:</p>
 <ul>
     <li>nome</li>
