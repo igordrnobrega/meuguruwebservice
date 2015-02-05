@@ -31,3 +31,11 @@ Meu Guru API
 <ul>
     <li>não tem</li>
 </ul>
+
+------------------
+<h2>Listar Locais</h2>
+<p>api: http://api.meuguru.com.br/locais</p>
+<p>parametros:</p>
+<ul>
+    <li>não tem</li>
+</ul>
