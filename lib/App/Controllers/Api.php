@@ -38,18 +38,17 @@ class Api {
 
         $table = 'imp_posts';
 
-        $sqlResultEstado    = null;
-        $sqlResultCidade    = null;
-        $sqlResulPromotor   = null;
-        $sqlResulLocal      = null;
-        $sqlResultNome      = null;
-        $sqlResulSegmento   = null;
+        $sqlResultEstado    = array();
+        $sqlResultCidade    = array();
+        $sqlResulPromotor   = array();
+        $sqlResulLocal      = array();
+        $sqlResultNome      = array();
+        $sqlResulSegmento   = array();
+        $sqlResulInicio     = array();
+        $sqlResulTermino    = array();
 
-        $sqlResulInicio;
-        $sqlResulTermino;
-
-        var_dump($parameters);
-        // Padrão pros caso estado cidade promotor local inicio termino
+        // var_dump($parameters);
+        // Padrão para os casos: estado cidade promotor local
 
         foreach ($parameters as $key => $value) {
 
@@ -60,8 +59,6 @@ class Api {
                             'meta_value %METAEXPRESSION%;';
 
             if($value) {
-                print($key);
-                print_r($value);
                 switch ($key) {
                     case 'estado':
                         $sqlPadrao = str_replace('%KEY%', 'estadoFeira', $sqlPadrao);
@@ -120,7 +117,7 @@ class Api {
                         break;
 
                     case 'evento':
-                        $sql = 'SELECT ID FROM imp_posts WHERE post_title like "%' . mysql_escape_string($value) . '%" ORDER BY ID';
+                        $sql = 'SELECT ID post_id FROM imp_posts WHERE post_title like "%' . mysql_escape_string($value) . '%" ORDER BY ID';
 
                         try {
                             $sqlResultNome = $app['db']->fetchAll($sql);
@@ -147,48 +144,105 @@ class Api {
             }
         }
 
-        if(array_key_exists('inicio', $parameters) || array_key_exists('termino', $parameters)) {
-
-        } else if(array_key_exists('inicio', $parameters) || !array_key_exists('termino', $parameters)) {
-
-        }else if (!array_key_exists('inicio', $parameters) || array_key_exists('termino', $parameters)){
-
+        $eventosData = [];
+        if($parameters['inicio'] != '' && $parameters['termino'] != '') {
+            $sqlInicio = 'SELECT * FROM imp_postmeta where meta_key = "dataInicial" and STR_TO_DATE(meta_value, "%d/%m/%Y") >= "' . $parameters['inicio'] . '"';
+            $sqlFim = 'SELECT * FROM imp_postmeta where meta_key = "dataFinal" and STR_TO_DATE(meta_value, "%d/%m/%Y") <= "' . $parameters['termino'] . '"';
+            try {
+                $sqlResulInicio = $app['db']->fetchAll($sqlInicio);
+                $sqlResulTermino = $app['db']->fetchAll($sqlFim);
+            } catch (\PDOException $e) {
+                return $e->getMessage();
+            }
+            foreach ($sqlResulInicio as $key => $value) {
+                foreach ($sqlResulTermino as $keyT => $valueT) {
+                    if($value['post_id'] === $valueT['post_id']) {
+                        array_push($eventosData, $valueT['post_id']);
+                    }
+                }
+            }
+        } else if($parameters['inicio'] != '' && $parameters['termino'] == '') {
+            $sqlInicio = 'SELECT post_id FROM imp_postmeta where meta_key = "dataInicial" and STR_TO_DATE(meta_value, "%d/%m/%Y") >= "' . $parameters['inicio'] . '" limit 30';
+            try {
+                $eventosData = $app['db']->fetchAll($sqlInicio);
+            } catch (\PDOException $e) {
+                return $e->getMessage();
+            }
+        } else if ($parameters['inicio'] == '' && $parameters['termino'] != ''){
+            $sqlFim = 'SELECT post_id FROM imp_postmeta where meta_key = "dataFinal" and STR_TO_DATE(meta_value, "%d/%m/%Y") <= "' . $parameters['termino'] . '" limit 30';
+            try {
+                $eventosData = $app['db']->fetchAll($sqlFim);
+            } catch (\PDOException $e) {
+                return $e->getMessage();
+            }
         }
 
-        print('ESTADO');
-        var_dump($sqlResultEstado);
-        print_r('NOME');
-        var_dump($sqlResultNome);
-        print_r('CIDADE');
-        var_dump($sqlResultCidade);
-        print_r('SEGMENTO');
-        var_dump($sqlResulSegmento);
-        print_r('PROMOTOR');
-        var_dump($sqlResulPromotor);
-        print_r('LOCAL');
-        var_dump($sqlResulLocal);
-        // print_r('INICIO');
-        // var_dump($sqlResulInicio);
-        // print_r('TERMINO');
-        // var_dump($sqlResulTermino);
+        $resultUm = array_merge($sqlResultEstado, $sqlResultNome, $sqlResultCidade, $sqlResulSegmento, $sqlResulPromotor, $sqlResulLocal, $eventosData);
 
-        die;
+        $resultDois = $this->removeValue($resultUm);
 
+        $resultTres = array_count_values($resultDois);
 
-        $sql = '';
-
-        $sql =  'SELECT * FROM ' . $table .
-                ' WHERE ';
-
-        if(array_key_exists('s', $parameters)) {
-            $sql .= 'post_title LIKE "%' . $parameters['s'] . '%" AND ';
+        $return = array();
+        foreach ($resultTres as $key => $value) {
+            if($value === 1) {
+                unset($resultTres[$key]);
+            } else {
+                array_push($return, $this->getEvent($key, $app));
+            }
         }
 
-        $sql .= 'post_type = "feiras";';
+        if(sizeof($return) == 0) {
+            if(sizeof($resultUm) > 10) {
+                $resultUm = array_slice($resultUm, 0, 10);
+            }
+            for ($i = 0; $i < sizeof($resultUm); $i++) {
+                array_push($return, $this->getEvent($resultUm[$i]['post_id'], $app));
+            }
+        }
 
+        return $app->json($return);
+    }
 
+    protected function getEvent($id, $app) {
+        $return = array();
 
-        return $app->json($sqlResult);
+        $sql = 'select evento.ID, evento.post_title, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
+            'from imp_posts evento ' .
+            'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
+            'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
+            'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
+            'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
+            'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
+            'where evento.ID = ' . $id . ' ' .
+            'and detalhes.meta_value != "" ' .
+            'group by detalhes.meta_value';
+
+        try {
+            $sqlResult = $app['db']->fetchAll($sql);
+
+            foreach ($sqlResult as $key => $value) {
+                if($key === 0) {
+                    $return = $value;
+                } else {
+                    $return[$value['meta_key']] = $value['meta_value'];
+                }
+            }
+
+        } catch (\PDOException $e) {
+            return $e->getMessage();
+        }
+
+        return $return;
+
+    }
+
+    protected function removeValue($array) {
+        $return = array();
+        foreach ($array as $key => $value) {
+            array_push($return, $value['post_id']);
+        }
+        return $return;
     }
 
     // PARAMETROS sem
