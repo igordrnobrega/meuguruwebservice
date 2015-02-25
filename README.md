@@ -2,10 +2,10 @@ Meu Guru API
 
 ------------------
 <h2>Procura por evento</h2>
-<p>api: http://api.meuguru.com.br/event/search</p>
+<p>api: http://meuguru.com.br/api/eventos/pesquisar?estado=&cidade=&promotor=&local=&inicio=&termino=&evento=&segmento=</p>
 <p>parametros:</p>
 <ul>
-    <li>s(nome)</li>
+    <li>evento</li>
     <li>estado</li>
     <li>cidade</li>
     <li>segmento</li>
@@ -18,7 +18,7 @@ Meu Guru API
 
 ------------------
 <h2>Listar Tipos Fornecedores</h2>
-<p>api: http://api.meuguru.com.br/fornecedores</p>
+<p>api: http://meuguru.com.br/api/fornecedores</p>
 <p>parametros:</p>
 <ul>
     <li>não tem</li>
@@ -26,7 +26,7 @@ Meu Guru API
 
 ------------------
 <h2>Listar Tipos Segmentos</h2>
-<p>api: http://api.meuguru.com.br/segmentos</p>
+<p>api: http://meuguru.com.br/api/segmentos</p>
 <p>parametros:</p>
 <ul>
     <li>não tem</li>
@@ -34,7 +34,7 @@ Meu Guru API
 
 ------------------
 <h2>Listar Locais</h2>
-<p>api: http://api.meuguru.com.br/locais</p>
+<p>api: http://meuguru.com.br/api/locais</p>
 <p>parametros:</p>
 <ul>
     <li>não tem</li>
