@@ -13,7 +13,6 @@ $app->register(new ValidatorServiceProvider());
 $app->register(new ServiceControllerServiceProvider());
 $app->register(new TwigServiceProvider());
 $app->register(new Silex\Provider\SessionServiceProvider());
-$app->register(new MobileDetectServiceProvider());
 
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     return $twig;
