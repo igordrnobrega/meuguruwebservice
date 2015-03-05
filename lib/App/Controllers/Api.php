@@ -248,6 +248,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'and detalhes.meta_value != "" ' .
+            'and evento.post_type = "feiras" ' .
             'group by detalhes.meta_value';
 
         try {
