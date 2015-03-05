@@ -4,7 +4,7 @@ namespace App\Controllers;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as Resp;
 
 class Api {
     /**
@@ -273,7 +273,7 @@ class Api {
             return $e->getMessage();
         }
 
-        return new Response(json_encode($return));
+        return new Resp(json_encode($return));
 
     }
 
