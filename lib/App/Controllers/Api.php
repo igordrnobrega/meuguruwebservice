@@ -272,7 +272,7 @@ class Api {
             return $e->getMessage();
         }
 
-        return $app->json($return);
+        return new Response(json_encode($return),200);
 
     }
 
