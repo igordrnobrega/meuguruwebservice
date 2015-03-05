@@ -237,6 +237,38 @@ class Api {
 
     }
 
+    public function getEventosAction(Request $request, Application $app) {
+        $return = array();
+
+        $sql = 'select evento.ID, evento.post_title, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
+            'from imp_posts evento ' .
+            'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
+            'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
+            'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
+            'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
+            'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
+            'and detalhes.meta_value != "" ' .
+            'group by detalhes.meta_value';
+
+        try {
+            $sqlResult = $app['db']->fetchAll($sql);
+
+            foreach ($sqlResult as $key => $value) {
+                if($key === 0) {
+                    $return = $value;
+                } else {
+                    $return[$value['meta_key']] = $value['meta_value'];
+                }
+            }
+
+        } catch (\PDOException $e) {
+            return $e->getMessage();
+        }
+
+        return $app->json($return);
+
+    }
+
     protected function removeValue($array) {
         $return = array();
         foreach ($array as $key => $value) {
