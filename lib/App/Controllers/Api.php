@@ -272,7 +272,10 @@ class Api {
             return $e->getMessage();
         }
 
-        return json_encode($return);
+        // Useful to return the newly added details
+        // HTTP_CREATED = 200
+
+        return Response(json_encode($return), HTTP_CREATED);
 
     }
 
