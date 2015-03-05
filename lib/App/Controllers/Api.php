@@ -248,17 +248,23 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'and detalhes.meta_value != "" ' .
-            'and evento.post_type = "feiras" ' .
-            'group by detalhes.meta_value';
+            'and evento.post_type = "feiras" ';
 
         try {
             $sqlResult = $app['db']->fetchAll($sql);
 
+            $count = 0;
+            $id = 0;
             foreach ($sqlResult as $key => $value) {
-                if($key === 0) {
-                    $return = $value;
+                if($id === 0) {
+                    $id = $value['ID'];
+                    array_push($return, $value);
+                } else if($value['ID'] == $id){
+                    $return[$count][$value['meta_key']] = $value['meta_value'];
                 } else {
-                    $return[$value['meta_key']] = $value['meta_value'];
+                    $count++;
+                    $id = $value['ID'];
+                    array_push($return, $value);
                 }
             }
 
