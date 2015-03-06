@@ -348,15 +348,44 @@ class Api {
 
     // PARAMETROS sem
     public function getLocaisAction(Request $request, Application $app) {
+        $return = array();
 
-        $sql =  'select post_title from imp_posts where post_type = "pavilhao" order by post_title;';
+        $sql = 'select evento.ID, evento.post_title, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
+            'from imp_posts evento ' .
+            'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
+            'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
+            'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
+            'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
+            'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
+            'and detalhes.meta_value != "" ' .
+            'and evento.post_type = "pavilhao" ' .
+            'or itt.taxonomy = "pavilhao" ';
 
         try {
             $sqlResult = $app['db']->fetchAll($sql);
+
+            $count = 0;
+            $id = 0;
+            foreach ($sqlResult as $key => $value) {
+                if($id === 0) {
+                    $id = $value['ID'];
+                    array_push($return, $value);
+                } else if($value['ID'] == $id){
+                    $return[$count][$value['meta_key']] = $value['meta_value'];
+                } else {
+                    $count++;
+                    $id = $value['ID'];
+                    array_push($return, $value);
+                }
+            }
+
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
 
-        return $app->json($sqlResult);
+        // Useful to return the newly added details
+        // HTTP_CREATED = 200
+
+        return new Response(json_encode($return), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
     }
 }
