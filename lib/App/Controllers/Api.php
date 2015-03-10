@@ -260,7 +260,9 @@ class Api {
                     $id = $value['ID'];
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
-                    $return[$count][$value['meta_key']] = $value['meta_value'];
+                    if(!$this->removeLixoWp($value['meta_key'])) {
+                        $return[$count][$value['meta_key']] = $value['meta_value'];
+                    }
                 } else {
                     $count++;
                     $id = $value['ID'];
@@ -277,6 +279,34 @@ class Api {
 
         return new Response(json_encode($return), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
 
+    }
+
+    protected function removeLixoWp($string) {
+        $lixo = (
+            'AnuncianteFeira',
+            'LocalFeira',
+            '_edit_last',
+            '_thumbnail_id',
+            '_yoast_wpseo_focuskw',
+            '_yoast_wpseo_linkdex',
+            '_yoast_wpseo_title',
+            'interesseAnuncioFeira',
+            'meta_key',
+            'meta_value',
+            'siglaFeira',
+            'timestamp',
+            '_edit_lock',
+            'emailFeira'
+        );
+
+        foreach ($lixo as $key => $value) {
+            print_r($value);
+            if(strcmp($value, $string) !== 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function removeValue($array) {
