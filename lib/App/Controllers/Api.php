@@ -260,9 +260,9 @@ class Api {
                     $id = $value['ID'];
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
-                    if(!$this->removeLixoWp($value['meta_key'])) {
+                    // if(!$this->removeLixoWp($value['meta_key'])) {
                         $return[$count][$value['meta_key']] = $value['meta_value'];
-                    }
+                    // }
                 } else {
                     $count++;
                     $id = $value['ID'];
@@ -281,32 +281,32 @@ class Api {
 
     }
 
-    protected function removeLixoWp($string) {
-        $lixo = (
-            'AnuncianteFeira',
-            'LocalFeira',
-            '_edit_last',
-            '_thumbnail_id',
-            '_yoast_wpseo_focuskw',
-            '_yoast_wpseo_linkdex',
-            '_yoast_wpseo_title',
-            'interesseAnuncioFeira',
-            'meta_key',
-            'meta_value',
-            'siglaFeira',
-            'timestamp',
-            '_edit_lock',
-            'emailFeira'
-        );
+    // protected function removeLixoWp($string) {
+    //     $lixo = (
+    //         'AnuncianteFeira',
+    //         'LocalFeira',
+    //         '_edit_last',
+    //         '_thumbnail_id',
+    //         '_yoast_wpseo_focuskw',
+    //         '_yoast_wpseo_linkdex',
+    //         '_yoast_wpseo_title',
+    //         'interesseAnuncioFeira',
+    //         'meta_key',
+    //         'meta_value',
+    //         'siglaFeira',
+    //         'timestamp',
+    //         '_edit_lock',
+    //         'emailFeira'
+    //     );
 
-        foreach ($lixo as $key => $value) {
-            if(strcmp($value, $string) !== 0) {
-                return true;
-            }
-        }
+    //     foreach ($lixo as $key => $value) {
+    //         if(strcmp($value, $string) !== 0) {
+    //             return true;
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
     protected function removeValue($array) {
         $return = array();
