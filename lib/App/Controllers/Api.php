@@ -260,9 +260,7 @@ class Api {
                     $id = $value['ID'];
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
-                    if(!$this->removeLixoWp($value['meta_key'])) {
-                        $return[$count][$value['meta_key']] = $value['meta_value'];
-                    }
+                    $return[$count][$value['meta_key']] = $value['meta_value'];
                 } else {
                     $count++;
                     $id = $value['ID'];
