@@ -422,7 +422,7 @@ class Api {
                         $postMetas = $this->getPostMeta($value['meta_value'], $app);
                         foreach ($postMetas as $keyPM => $valuePM) {
                             if(!$this->removeLixoWp($valuePM['meta_key'])) {
-                                $return[$count]['loja'][$valuePM['meta_key']] = $value['meta_value'];
+                                $return[$count]['loja'][$valuePM['meta_key']] = $valuePM['meta_value'];
                             }
                         }
                     } else {
