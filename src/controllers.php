@@ -15,3 +15,4 @@ $app->get('/eventos', 'App\\Controllers\\Api::getEventosAction');
 $app->get('/segmentos', 'App\\Controllers\\Api::getSegmentosAction');
 $app->get('/fornecedores', 'App\\Controllers\\Api::getFornecedoresAction');
 $app->get('/locais', 'App\\Controllers\\Api::getLocaisAction');
+$app->get('/produtos', 'App\\Controllers\\Api::getProdutosAction');

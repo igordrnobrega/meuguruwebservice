@@ -281,34 +281,6 @@ class Api {
 
     }
 
-    protected function removeLixoWp($string) {
-        $lixo = array(
-            'AnuncianteFeira',
-            'LocalFeira',
-            '_edit_last',
-            '_thumbnail_id',
-            '_yoast_wpseo_focuskw',
-            '_yoast_wpseo_linkdex',
-            '_yoast_wpseo_title',
-            'interesseAnuncioFeira',
-            'meta_key',
-            'meta_value',
-            'siglaFeira',
-            'timestamp',
-            '_edit_lock',
-            'emailFeira',
-            '_wp_old_slug'
-        );
-
-        foreach ($lixo as $key => $value) {
-            if($value === $string) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     protected function removeValue($array) {
         $return = array();
         foreach ($array as $key => $value) {
@@ -416,5 +388,96 @@ class Api {
         // HTTP_CREATED = 200
 
         return new Response(json_encode($return), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
+    }
+
+    // PARAMETROS sem
+    public function getProdutosAction(Request $request, Application $app) {
+        $return = array();
+
+        $sql = 'select evento.ID, evento.post_title, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
+            'from imp_posts evento ' .
+            'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
+            'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
+            'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
+            'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
+            'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
+            'and detalhes.meta_value != "" ' .
+            'and segmento.name not like "Destaque%" ' .
+            'and itt.taxonomy = "produtos" ';
+
+        try {
+            $sqlResult = $app['db']->fetchAll($sql);
+
+            $count = 0;
+            $id = 0;
+            foreach ($sqlResult as $key => $value) {
+                if($id === 0) {
+                    $id = $value['ID'];
+                    array_push($return, $value);
+                } else if($value['ID'] == $id){
+                    if($value['meta_key'] == '_thumbnail_id') {
+                        $return[$count][$value['meta_key']] = $this->getThumb($value['meta_value'], $app);
+                    } else {
+                        $return[$count][$value['meta_key']] = $value['meta_value'];
+                    }
+                } else {
+                    $count++;
+                    $id = $value['ID'];
+                    array_push($return, $value);
+                }
+            }
+
+        } catch (\PDOException $e) {
+            return $e->getMessage();
+        }
+
+        var_dump($return);
+        die;
+
+        // Useful to return the newly added details
+        // HTTP_CREATED = 200
+
+        return new Response(json_encode($return), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
+    }
+
+    protected function getThumb($id, $app) {
+        $sql = 'select guid from imp_posts where ID = ' . $id;
+
+        try {
+            $sqlResult = $app['db']->fetchAssoc($sql);
+        } catch (\PDOException $e) {
+            return $e->getMessage();
+        }
+
+        return $sqlResult['guid'];
+    }
+
+
+    protected function removeLixoWp($string) {
+        $lixo = array(
+            'AnuncianteFeira',
+            'LocalFeira',
+            '_edit_last',
+            '_thumbnail_id',
+            '_yoast_wpseo_focuskw',
+            '_yoast_wpseo_linkdex',
+            '_yoast_wpseo_title',
+            'interesseAnuncioFeira',
+            'meta_key',
+            'meta_value',
+            'siglaFeira',
+            'timestamp',
+            '_edit_lock',
+            'emailFeira',
+            '_wp_old_slug'
+        );
+
+        foreach ($lixo as $key => $value) {
+            if($value === $string) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
