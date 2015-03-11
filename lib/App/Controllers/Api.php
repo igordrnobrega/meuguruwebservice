@@ -416,7 +416,9 @@ class Api {
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
                     if($value['meta_key'] == '_thumbnail_id') {
-                        $return[$count][$value['meta_key']] = $this->getThumb($value['meta_value'], $app);
+                        $return[$count][$value['meta_key']] = $this->getThumb($value['meta_value'], 'guid', $app);
+                    } else if($value['meta_key'] == 'NomedaLoja') {
+                        $return[$count][$value['meta_key']] = $this->getThumb($value['meta_value'], 'post_title', $app);
                     } else {
                         $return[$count][$value['meta_key']] = $value['meta_value'];
                     }
@@ -437,8 +439,8 @@ class Api {
         return new Response(json_encode($return), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
     }
 
-    protected function getThumb($id, $app) {
-        $sql = 'select guid from imp_posts where ID = ' . $id;
+    protected function getPost($id, $colun, $app) {
+        $sql = 'select ' . $colun .' from imp_posts where ID = ' . $id;
 
         try {
             $sqlResult = $app['db']->fetchAssoc($sql);
@@ -446,9 +448,8 @@ class Api {
             return $e->getMessage();
         }
 
-        return $sqlResult['guid'];
+        return $sqlResult[$colun];
     }
-
 
     protected function removeLixoWp($string) {
         $lixo = array(
