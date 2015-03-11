@@ -416,9 +416,9 @@ class Api {
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
                     if($value['meta_key'] == '_thumbnail_id') {
-                        $return[$count][$value['meta_key']] = $this->getThumb($value['meta_value'], 'guid', $app);
+                        $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'guid', $app);
                     } else if($value['meta_key'] == 'NomedaLoja') {
-                        $return[$count][$value['meta_key']] = $this->getThumb($value['meta_value'], 'post_title', $app);
+                        $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'post_title', $app);
                     } else {
                         $return[$count][$value['meta_key']] = $value['meta_value'];
                     }
