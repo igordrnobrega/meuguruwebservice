@@ -419,6 +419,7 @@ class Api {
                         $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'guid', $app);
                     } else if($value['meta_key'] == 'NomedaLoja') {
                         $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'post_title', $app);
+                        $return[$count][$value['loja']] = $this->getPostMeta($value['meta_value'], $app);
                     } else {
                         $return[$count][$value['meta_key']] = $value['meta_value'];
                     }
@@ -437,6 +438,19 @@ class Api {
         // HTTP_CREATED = 200
 
         return new Response(json_encode($return), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
+    }
+
+    protected function getPostMeta($id, $app) {
+        $sql = 'select * from imp_postmeta where post_id = ' . $id . ' and meta_value != ""';
+
+        try {
+            $result = $app['db']->fetchAll($sql);
+        } catch (\PDOException $e) {
+            return $e->getMessage();
+        }
+
+        return $result;
+
     }
 
     protected function getPost($id, $colun, $app) {
