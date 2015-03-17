@@ -578,9 +578,6 @@ class Api {
             return $e->getMessage();
         }
 
-        var_dump($return);
-        die;
-
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
