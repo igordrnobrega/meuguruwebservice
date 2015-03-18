@@ -495,7 +495,7 @@ class Api {
     public function getNoticiasAction(Request $request, Application $app) {
         $return = array();
 
-        $sql = 'select evento.ID, evento.post_title, evento.post_date, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
+        $sql = 'select evento.ID, evento.post_title, evento.post_date, imagem.guid, segmento.name, GROUP_CONCAT(DISTINCT detalhes.meta_key SEPARATOR "/-/") as meta_key, GROUP_CONCAT(DISTINCT detalhes.meta_value SEPARATOR "/-/") as meta_value' .
             'from imp_posts evento ' .
             'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
             'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
@@ -504,33 +504,26 @@ class Api {
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'and detalhes.meta_value != "" ' .
             'and evento.post_type = "noticia" ' .
+            'group by evento.ID ' .
             'order by evento.ID desc';
 
         try {
             $sqlResult = $app['db']->fetchAll($sql);
 
-            $count = 0;
-            $id = 0;
             foreach ($sqlResult as $key => $value) {
-                if($id === 0) {
-                    $id = $value['ID'];
-                    array_push($return, $value);
-                } else if($value['ID'] == $id){
-                    if($value['meta_key'] == '_thumbnail_id') {
-                        $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'guid', $app);
-                    } else {
-                        $return[$count][$value['meta_key']] = $value['meta_value'];
-                    }
-                } else {
-                    $count++;
-                    $id = $value['ID'];
-                    array_push($return, $value);
+                $meta_key = explode('/-/', $value['meta_key']);
+                $meta_value = explode('/-/', $value['meta_value']);
+                foreach ($meta_key as $keyM => $valueM) {
+                    $sqlResult[$key][$valueM] = $meta_value[$key];
                 }
             }
 
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
+
+        var_dump($sqlResult);
+        die;
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
