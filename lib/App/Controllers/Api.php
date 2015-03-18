@@ -549,7 +549,9 @@ class Api {
             'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
-            'and detalhes.meta_value != "" ' .
+            'where detalhes.meta_value != "" ' .
+            'and itt.taxonomy = "categorias_projetos" ' .
+            'and segmento.name not like "Destaque%" ' .
             'and evento.post_type = "projetos" ';
 
         try {
