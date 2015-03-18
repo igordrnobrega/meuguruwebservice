@@ -519,6 +519,8 @@ class Api {
                         $sqlResult[$key][$valueM] = $meta_value[$keyM];
                     }
                 }
+                unset($sqlResult['$meta_key']);
+                unset($sqlResult['$meta_value']);
             }
 
         } catch (\PDOException $e) {
