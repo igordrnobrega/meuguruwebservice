@@ -518,8 +518,6 @@ class Api {
                     foreach ($meta_key as $keyM => $valueM) {
                         $sqlResult[$key][$valueM] = $meta_value[$keyM];
                     }
-                } else {
-                    echo 'nao bateu';
                 }
             }
 
@@ -527,13 +525,10 @@ class Api {
             return $e->getMessage();
         }
 
-        var_dump($sqlResult);
-        die;
-
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
-        return new Response(json_encode($return), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
+        return new Response(json_encode($sqlResult), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
     }
 
     // PARAMETROS sem
