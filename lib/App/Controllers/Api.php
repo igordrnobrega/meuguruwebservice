@@ -514,8 +514,12 @@ class Api {
                 $meta_key = explode('/-/', $value['meta_key']);
                 $meta_value = explode('/-/', $value['meta_value']);
 
-                foreach ($meta_key as $keyM => $valueM) {
-                    $sqlResult[$key][$valueM] = $meta_value[$keyM];
+                if(sizeof($meta_key) == sizeof($meta_value)) {
+                    foreach ($meta_key as $keyM => $valueM) {
+                        $sqlResult[$key][$valueM] = $meta_value[$keyM];
+                    }
+                } else {
+                    echo 'nao bateu';
                 }
             }
 
