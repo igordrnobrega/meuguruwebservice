@@ -514,15 +514,11 @@ class Api {
                 $meta_key = explode('/-/', $value['meta_key']);
                 $meta_value = explode('/-/', $value['meta_value']);
 
+                $date = new \DateTime($value['post_date']);
+                $sqlResult[$key]['post_date'] = $date->format('d/m/Y');
+
                 if(sizeof($meta_key) == sizeof($meta_value)) {
                     foreach ($meta_key as $keyM => $valueM) {
-                        echo $valueM;
-                        if($valueM == 'post_date') {
-                            echo 'post_date';
-                            die;
-                            $date = new \DateTime($valueM);
-                            $sqlResult[$key][$valueM] = $date->format('d/m/y');
-                        }
                         $sqlResult[$key][$valueM] = $meta_value[$keyM];
                     }
                 }
