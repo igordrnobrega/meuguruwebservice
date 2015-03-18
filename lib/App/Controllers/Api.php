@@ -517,6 +517,8 @@ class Api {
                 if(sizeof($meta_key) == sizeof($meta_value)) {
                     foreach ($meta_key as $keyM => $valueM) {
                         if($valueM == 'post_date') {
+                            echo 'post_date';
+                            die;
                             $date = new \DateTime($valueM);
                             $sqlResult[$key][$valueM] = $date->format('d/m/y');
                         }
