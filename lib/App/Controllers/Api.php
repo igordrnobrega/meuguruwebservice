@@ -513,9 +513,12 @@ class Api {
             foreach ($sqlResult as $key => $value) {
                 $meta_key = explode('/-/', $value['meta_key']);
                 $meta_value = explode('/-/', $value['meta_value']);
-                foreach ($meta_key as $keyM => $valueM) {
-                    $sqlResult[$key][$valueM] = $meta_value[$key];
-                }
+
+                echo sizeof($meta_key);
+                echo sizeof($meta_value);
+                // foreach ($meta_key as $keyM => $valueM) {
+                //     $sqlResult[$key][$valueM] = $meta_value[$key];
+                // }
             }
 
         } catch (\PDOException $e) {
