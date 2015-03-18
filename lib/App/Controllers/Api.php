@@ -516,6 +516,8 @@ class Api {
 
                 if(sizeof($meta_key) == sizeof($meta_value)) {
                     foreach ($meta_key as $keyM => $valueM) {
+                        echo $valueM;
+                        die;
                         if($valueM == 'post_date') {
                             echo 'post_date';
                             die;
