@@ -516,11 +516,15 @@ class Api {
 
                 if(sizeof($meta_key) == sizeof($meta_value)) {
                     foreach ($meta_key as $keyM => $valueM) {
+                        if($valueM == 'post_date') {
+                            $date = new \DateTime($valueM);
+                            $sqlResult[$key][$valueM] = $date->format('d/m/y');
+                        }
                         $sqlResult[$key][$valueM] = $meta_value[$keyM];
                     }
                 }
-                unset($sqlResult['$meta_key']);
-                unset($sqlResult['$meta_value']);
+                unset($sqlResult[$key]['$meta_key']);
+                unset($sqlResult[$key]['$meta_value']);
             }
 
         } catch (\PDOException $e) {
