@@ -372,7 +372,11 @@ class Api {
                     $id = $value['ID'];
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
-                    $return[$count][$value['meta_key']] = $value['meta_value'];
+                    if($value['meta_key'] == '_thumbnail_id') {
+                        $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'guid', $app);
+                    } else {
+                        $return[$count][$value['meta_key']] = $value['meta_value'];
+                    }
                 } else {
                     $count++;
                     $id = $value['ID'];
