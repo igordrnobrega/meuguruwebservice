@@ -151,12 +151,12 @@ class Api {
             $sqlResult = $app['db']->fetchAll($sql);
 
             foreach ($sqlResult as $key => $value) {
-                echo 'MEta_key' . sizeof($value['meta_key']);
-                echo 'MEta_value' . sizeof($value['meta_value']);
 
-                $meta_key = explode('/-/', $value['meta_key']);
+                $meta_key   = explode('/-/', $value['meta_key']);
                 $meta_value = explode('/-/', $value['meta_value']);
 
+                echo 'MEta_key' . sizeof($meta_key);
+                echo 'MEta_value' . sizeof($meta_value);
                 // if(sizeof($meta_key) == sizeof($meta_value)) {
                 //     foreach ($meta_key as $keyM => $valueM) {
                 //         if($valueM == '_thumbnail_id') {
