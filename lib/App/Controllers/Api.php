@@ -41,6 +41,7 @@ class Api {
             foreach ($sqlResult as $key => $value) {
                 if($id === 0) {
                     $id = $value['ID'];
+                    $value['guid'] = $this->checkImg($value['guid']);
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
                     if(!$this->removeLixoWp($value['meta_key'])) {
@@ -49,6 +50,7 @@ class Api {
                 } else {
                     $count++;
                     $id = $value['ID'];
+                    $value['guid'] = $this->checkImg($value['guid']);
                     array_push($return, $value);
                 }
             }
