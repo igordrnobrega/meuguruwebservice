@@ -135,7 +135,7 @@ class Api {
     public function getLocaisAction(Request $request, Application $app) {
         $return = array();
 
-        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, GROUP_CONCAT(DISTINCT detalhes.meta_key ORDER BY detalhes.meta_id ASC SEPARATOR "/*-*/") as meta_key, GROUP_CONCAT(DISTINCT detalhes.meta_value ORDER BY detalhes.meta_id ASC SEPARATOR "/*-*/") as meta_value ' .
+        $sql = 'select evento.ID, evento.post_title, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
             'from imp_posts evento ' .
             'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
             'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
@@ -143,33 +143,23 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'and detalhes.meta_value != "" ' .
-            'and itt.taxonomy = "pavilhao" ' .
-            'group by evento.ID ' .
-            'order by evento.ID desc';
+            'and itt.taxonomy = "pavilhao" ';
 
         try {
             $sqlResult = $app['db']->fetchAll($sql);
 
+            $count = 0;
+            $id = 0;
             foreach ($sqlResult as $key => $value) {
-
-                $meta_key   = explode('/*-*/', $value['meta_key']);
-                $meta_value = explode('/*-*/', $value['meta_value']);
-
-                if($meta_key[0] == '_edit_lock') {
-                    echo '_edit_lock';
-                    array_slice($meta_key, 0, 1);
-                }
-
-                echo sizeof($meta_key);
-                echo sizeof($meta_value);
-
-                if(sizeof($meta_key) == sizeof($meta_value)) {
-                    foreach ($meta_key as $keyM => $valueM) {
-                        $sqlResult[$key][$valueM] = $meta_value[$keyM];
-                        if($valueM == '_thumbnail_id') {
-                            $sqlResult[$key][$valueM] = $this->checkImg($this->getPost($meta_value[$keyM], 'guid', $app));
-                        }
-                    }
+                if($id === 0) {
+                    $id = $value['ID'];
+                    array_push($return, $value);
+                } else if($value['ID'] == $id){
+                    $return[$count][$value['meta_key']] = $value['meta_value'];
+                } else {
+                    $count++;
+                    $id = $value['ID'];
+                    array_push($return, $value);
                 }
             }
 
@@ -180,7 +170,7 @@ class Api {
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
-        return new Response(json_encode($sqlResult), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
+        return new Response(json_encode($return), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
     }
 
     // PARAMETROS sem
@@ -315,8 +305,8 @@ class Api {
                         $sqlResult[$key][$valueM] = $meta_value[$keyM];
                     }
                 }
-                unset($sqlResult[$key]['meta_key']);
-                unset($sqlResult[$key]['meta_value']);
+                unset($sqlResult[$key]['$meta_key']);
+                unset($sqlResult[$key]['$meta_value']);
             }
 
         } catch (\PDOException $e) {
@@ -395,7 +385,7 @@ class Api {
         $sql = 'select ' . $colun .' from imp_posts where ID = ' . $id;
 
         try {
-            $sqlResult = $app['db']->fetchAssoc($sql);
+            $sqlResult = $app['db']->getPost($sql);
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
@@ -405,11 +395,20 @@ class Api {
 
     protected function removeLixoWp($string) {
         $lixo = array(
+            'AnuncianteFeira',
+            'LocalFeira',
             '_edit_last',
+            '_thumbnail_id',
             '_yoast_wpseo_focuskw',
             '_yoast_wpseo_linkdex',
             '_yoast_wpseo_title',
+            'interesseAnuncioFeira',
+            'meta_key',
+            'meta_value',
+            'siglaFeira',
+            'timestamp',
             '_edit_lock',
+            'emailFeira',
             '_wp_old_slug'
         );
 
@@ -423,6 +422,7 @@ class Api {
     }
 
     protected function checkImg($url) {
-        return str_replace("/plugin", "", $url);
+        return str_replace('/plugin', '', $url);
+
     }
 }
