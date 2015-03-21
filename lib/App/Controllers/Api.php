@@ -182,7 +182,7 @@ class Api {
     public function getProdutosAction(Request $request, Application $app) {
         $return = array();
 
-        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
+        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, imagem.post_title as nomeLoja, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
             'from imp_posts evento ' .
             'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
             'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
@@ -201,11 +201,10 @@ class Api {
             foreach ($sqlResult as $key => $value) {
                 if($id === 0) {
                     $id = $value['ID'];
+                    $value['guid'] = $this->checkImg($value['guid']);
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
-                    if($value['meta_key'] == '_thumbnail_id') {
-                        $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'guid', $app);
-                    } else if($value['meta_key'] == 'NomedaLoja') {
+                    if($value['meta_key'] == 'NomedaLoja') {
                         $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'post_title', $app);
                         $postMetas = $this->getPostMeta($value['meta_value'], $app);
                         foreach ($postMetas as $keyPM => $valuePM) {
@@ -219,6 +218,7 @@ class Api {
                 } else {
                     $count++;
                     $id = $value['ID'];
+                    $value['guid'] = $this->checkImg($value['guid']);
                     array_push($return, $value);
                 }
             }
@@ -255,16 +255,14 @@ class Api {
             foreach ($sqlResult as $key => $value) {
                 if($id === 0) {
                     $id = $value['ID'];
+                    $value['guid'] = $this->checkImg($value['guid']);
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
-                    if($value['meta_key'] == '_thumbnail_id') {
-                        $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'guid', $app);
-                    } else {
-                        $return[$count][$value['meta_key']] = $value['meta_value'];
-                    }
+                    $return[$count][$value['meta_key']] = $value['meta_value'];
                 } else {
                     $count++;
                     $id = $value['ID'];
+                    $value['guid'] = $this->checkImg($value['guid']);
                     array_push($return, $value);
                 }
             }
