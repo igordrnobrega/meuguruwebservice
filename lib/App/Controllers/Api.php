@@ -159,7 +159,7 @@ class Api {
 
                 echo sizeof($meta_key);
                 echo sizeof($meta_value);
-                echo '<br/>'
+                echo '<br/>';
 
                 // if(sizeof($meta_key) == sizeof($meta_value)) {
                 //     foreach ($meta_key as $keyM => $valueM) {
