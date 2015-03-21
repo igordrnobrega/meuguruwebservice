@@ -160,6 +160,7 @@ class Api {
                 } else {
                     $count++;
                     $id = $value['ID'];
+                    $value['guid'] = $this->checkImg($value['guid']);
                     array_push($return, $value);
                 }
             }
