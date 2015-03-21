@@ -373,7 +373,7 @@ class Api {
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
                     if($value['meta_key'] == '_thumbnail_id') {
-                        $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'guid', $app);
+                        $return[$count][$value['meta_key']] = $this->checkImg($this->getPost($value['meta_value'], 'guid', $app));
                     } else {
                         $return[$count][$value['meta_key']] = $value['meta_value'];
                     }
@@ -640,5 +640,13 @@ class Api {
         }
 
         return false;
+    }
+
+    protected function checkImg($url) {
+        filter_var($url, FILTER_VALIDATE_URL);
+        if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
+            return false;
+        }
+        return $url;
     }
 }
