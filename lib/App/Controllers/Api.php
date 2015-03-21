@@ -153,7 +153,7 @@ class Api {
             foreach ($sqlResult as $key => $value) {
                 if($id === 0) {
                     $id = $value['ID'];
-                    $sqlResult[$key]['guid'] = $this->checkImg($value['guid']);
+                    $value['guid'] = $this->checkImg($value['guid']);
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
                     $return[$count][$value['meta_key']] = $value['meta_value'];
