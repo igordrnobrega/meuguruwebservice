@@ -156,20 +156,18 @@ class Api {
                 $meta_value = explode('/*-*/', $value['meta_value']);
 
                 unset($meta_key[0]);
-                var_dump($meta_key);
-                var_dump($meta_value);
 
-                // if(sizeof($meta_key) == sizeof($meta_value)) {
-                //     foreach ($meta_key as $keyM => $valueM) {
-                //         if($valueM == '_thumbnail_id') {
-                //             $sqlResult[$key][$valueM] = $this->checkImg($this->getPost($meta_value[$keyM], 'guid', $app));
-                //         } else if($valueM != 'servicosPavilhao'){
-                //             $sqlResult[$key][$valueM] = $meta_value[$keyM];
-                //         }
-                //     }
-                // }
-                // unset($sqlResult[$key]['meta_key']);
-                // unset($sqlResult[$key]['meta_value']);
+                if(sizeof($meta_key) == sizeof($meta_value)) {
+                    foreach ($meta_key as $keyM => $valueM) {
+                        if($valueM == '_thumbnail_id') {
+                            $sqlResult[$key][$valueM] = $this->checkImg($this->getPost($meta_value[$keyM], 'guid', $app));
+                        } else if($valueM != 'servicosPavilhao'){
+                            $sqlResult[$key][$valueM] = $meta_value[$keyM];
+                        }
+                    }
+                }
+                unset($sqlResult[$key]['meta_key']);
+                unset($sqlResult[$key]['meta_value']);
             }
 
         } catch (\PDOException $e) {
