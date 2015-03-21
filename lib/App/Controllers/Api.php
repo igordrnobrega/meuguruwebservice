@@ -135,7 +135,7 @@ class Api {
     public function getLocaisAction(Request $request, Application $app) {
         $return = array();
 
-        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, GROUP_CONCAT(DISTINCT detalhes.meta_key SEPARATOR "/-/") as meta_key, GROUP_CONCAT(DISTINCT detalhes.meta_value SEPARATOR "/-/") as meta_value ' .
+        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, GROUP_CONCAT(DISTINCT detalhes.meta_key SEPARATOR "/*-*/") as meta_key, GROUP_CONCAT(DISTINCT detalhes.meta_value SEPARATOR "/*-*/") as meta_value ' .
             'from imp_posts evento ' .
             'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
             'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
@@ -152,8 +152,8 @@ class Api {
 
             foreach ($sqlResult as $key => $value) {
 
-                $meta_key   = explode('/-/', $value['meta_key']);
-                $meta_value = explode('/-/', $value['meta_value']);
+                $meta_key   = explode('/*-*/', $value['meta_key']);
+                $meta_value = explode('/*-*/', $value['meta_value']);
 
                 echo 'MEta_key' . sizeof($meta_key);
                 echo 'MEta_value' . sizeof($meta_value);
