@@ -135,7 +135,7 @@ class Api {
     public function getLocaisAction(Request $request, Application $app) {
         $return = array();
 
-        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, GROUP_CONCAT(DISTINCT detalhes.meta_key SEPARATOR "/*-*/") as meta_key, GROUP_CONCAT(DISTINCT detalhes.meta_value SEPARATOR "/*-*/") as meta_value ' .
+        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, GROUP_CONCAT(DISTINCT detalhes.meta_key SEPARATOR "/*-*/") as meta_key, GROUP_CONCAT(DISTINCT detalhes.meta_value SEPARATOR "/*-*/") as meta_value, count(detalhes.meta_value), count(detalhes.meta_key) ' .
             'from imp_posts evento ' .
             'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
             'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
@@ -150,23 +150,25 @@ class Api {
         try {
             $sqlResult = $app['db']->fetchAll($sql);
 
-            foreach ($sqlResult as $key => $value) {
+            var_dump($sqlResult);
 
-                $meta_key   = explode('/*-*/', $value['meta_key']);
-                $meta_value = explode('/*-*/', $value['meta_value']);
+            // foreach ($sqlResult as $key => $value) {
 
-                if(sizeof($meta_key) == sizeof($meta_value)) {
-                    foreach ($meta_key as $keyM => $valueM) {
-                        if($valueM == '_thumbnail_id') {
-                            $sqlResult[$key][$valueM] = $this->checkImg($this->getPost($meta_value[$keyM], 'guid', $app));
-                        } else if($valueM != 'servicosPavilhao'){
-                            $sqlResult[$key][$valueM] = $meta_value[$keyM];
-                        }
-                    }
-                }
-                unset($sqlResult[$key]['meta_key']);
-                unset($sqlResult[$key]['meta_value']);
-            }
+            //     $meta_key   = explode('/*-*/', $value['meta_key']);
+            //     $meta_value = explode('/*-*/', $value['meta_value']);
+
+            //     if(sizeof($meta_key) == sizeof($meta_value)) {
+            //         foreach ($meta_key as $keyM => $valueM) {
+            //             if($valueM == '_thumbnail_id') {
+            //                 $sqlResult[$key][$valueM] = $this->checkImg($this->getPost($meta_value[$keyM], 'guid', $app));
+            //             } else if($valueM != 'servicosPavilhao'){
+            //                 $sqlResult[$key][$valueM] = $meta_value[$keyM];
+            //             }
+            //         }
+            //     }
+            //     unset($sqlResult[$key]['meta_key']);
+            //     unset($sqlResult[$key]['meta_value']);
+            // }
 
         } catch (\PDOException $e) {
             return $e->getMessage();
