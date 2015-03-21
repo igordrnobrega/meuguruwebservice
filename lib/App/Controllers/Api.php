@@ -145,7 +145,7 @@ class Api {
             'and detalhes.meta_value != "" ' .
             'and itt.taxonomy = "pavilhao" ' .
             'group by evento.ID ' .
-            'order by evento.ID desc';
+            'order by evento.ID desc, detalhes.meta_id desc';
 
         try {
             $sqlResult = $app['db']->fetchAll($sql);
@@ -155,22 +155,18 @@ class Api {
                 $meta_key   = explode('/*-*/', $value['meta_key']);
                 $meta_value = explode('/*-*/', $value['meta_value']);
 
-                echo 'MEta_key' . sizeof($meta_key);
-                echo 'MEta_value' . sizeof($meta_value);
-                // if(sizeof($meta_key) == sizeof($meta_value)) {
-                //     foreach ($meta_key as $keyM => $valueM) {
-                //         if($valueM == '_thumbnail_id') {
-                //             $sqlResult[$key][$valueM] = $this->checkImg($this->getPost($meta_value[$keyM], 'guid', $app));
-                //         } else if($valueM != 'servicosPavilhao'){
-                //             $sqlResult[$key][$valueM] = $meta_value[$keyM];
-                //         }
-                //     }
-                // }
-                // unset($sqlResult[$key]['meta_key']);
-                // unset($sqlResult[$key]['meta_value']);
+                if(sizeof($meta_key) == sizeof($meta_value)) {
+                    foreach ($meta_key as $keyM => $valueM) {
+                        if($valueM == '_thumbnail_id') {
+                            $sqlResult[$key][$valueM] = $this->checkImg($this->getPost($meta_value[$keyM], 'guid', $app));
+                        } else if($valueM != 'servicosPavilhao'){
+                            $sqlResult[$key][$valueM] = $meta_value[$keyM];
+                        }
+                    }
+                }
+                unset($sqlResult[$key]['meta_key']);
+                unset($sqlResult[$key]['meta_value']);
             }
-
-            // var_dump($sqlResult);
 
         } catch (\PDOException $e) {
             return $e->getMessage();
