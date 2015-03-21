@@ -155,7 +155,7 @@ class Api {
                 $meta_key   = explode('/*-*/', $value['meta_key']);
                 $meta_value = explode('/*-*/', $value['meta_value']);
 
-                unset($meta_key[0]);
+                // unset($meta_key[0]);
 
                 echo sizeof($meta_key);
                 echo sizeof($meta_value);
