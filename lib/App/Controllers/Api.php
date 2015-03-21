@@ -155,7 +155,7 @@ class Api {
                 $meta_key   = explode('/*-*/', $value['meta_key']);
                 $meta_value = explode('/*-*/', $value['meta_value']);
 
-                unset($meta_key['_edit_lock']);
+                unset($meta_key[0]);
                 var_dump($meta_key);
                 var_dump($meta_value);
 
