@@ -155,22 +155,21 @@ class Api {
                 $meta_key   = explode('/*-*/', $value['meta_key']);
                 $meta_value = explode('/*-*/', $value['meta_value']);
 
-                // unset($meta_key[0]);
+                if($meta_key[0] == '_edit_lock') {
+                    unset($meta_key[0]);
+                }
 
-                echo sizeof($meta_key);
-                echo sizeof($meta_value);
-                echo '<br/>';
 
                 // if(sizeof($meta_key) == sizeof($meta_value)) {
-                //     foreach ($meta_key as $keyM => $valueM) {
-                //         $sqlResult[$key][$valueM] = $meta_value[$keyM];
-                //         if($valueM == '_thumbnail_id') {
-                //             $sqlResult[$key][$valueM] = $this->checkImg($this->getPost($meta_value[$keyM], 'guid', $app));
-                //         }
-                //     }
+                    foreach ($meta_key as $keyM => $valueM) {
+                        $sqlResult[$key][$valueM] = $meta_value[$keyM];
+                        if($valueM == '_thumbnail_id') {
+                            $sqlResult[$key][$valueM] = $this->checkImg($this->getPost($meta_value[$keyM], 'guid', $app));
+                        }
+                    }
                 // }
-                // unset($sqlResult[$key]['meta_key']);
-                // unset($sqlResult[$key]['meta_value']);
+                unset($sqlResult[$key]['meta_key']);
+                unset($sqlResult[$key]['meta_value']);
             }
 
         } catch (\PDOException $e) {
