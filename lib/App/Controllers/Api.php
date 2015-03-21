@@ -417,14 +417,6 @@ class Api {
     }
 
     protected function checkImg($url) {
-        $handle = curl_init($url);
-        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-        if($httpCode == 404) {
-            curl_close($handle);
-            return false;
-        }
-        curl_close($handle);
-        return $url;
-
+        return str_replace("/plugin", "", $url);
     }
 }
