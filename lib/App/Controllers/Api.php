@@ -347,16 +347,14 @@ class Api {
             foreach ($sqlResult as $key => $value) {
                 if($id === 0) {
                     $id = $value['ID'];
+                    $value['guid'] = $this->checkImg($value['guid']);
                     array_push($return, $value);
                 } else if($value['ID'] == $id){
-                    if($value['meta_key'] == '_thumbnail_id') {
-                        $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'guid', $app);
-                    } else {
-                        $return[$count][$value['meta_key']] = $value['meta_value'];
-                    }
+                    $return[$count][$value['meta_key']] = $value['meta_value'];
                 } else {
                     $count++;
                     $id = $value['ID'];
+                    $value['guid'] = $this->checkImg($value['guid']);
                     array_push($return, $value);
                 }
             }
