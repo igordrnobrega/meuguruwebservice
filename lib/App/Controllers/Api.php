@@ -31,6 +31,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'where detalhes.meta_value != "" ' .
+            'and evento.post_status == "publish" ' .
             'and evento.post_type = "feiras" ';
 
         try {
@@ -66,31 +67,6 @@ class Api {
 
     }
 
-    protected function removeValue($array) {
-        $return = array();
-        foreach ($array as $key => $value) {
-            array_push($return, $value['post_id']);
-        }
-        return $return;
-    }
-
-    // PARAMETROS sem
-    public function getSegmentosAction(Request $request, Application $app) {
-
-        $sql =  'select slug, name from imp_terms t ' .
-                'inner join imp_term_taxonomy tt on t.term_id = tt.term_id ' .
-                'where tt.taxonomy = "segmento" ' .
-                'order by name;';
-
-        try {
-            $sqlResult = $app['db']->fetchAll($sql);
-        } catch (\PDOException $e) {
-            return $e->getMessage();
-        }
-
-        return $app->json($sqlResult);
-    }
-
     // PARAMETROS sem
     public function getFornecedoresAction(Request $request, Application $app) {
         $return = array();
@@ -102,8 +78,8 @@ class Api {
             'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
-            'where detalhes.meta_value != ""
-            and evento.post_status == "publish" ' .
+            'where detalhes.meta_value != "" ' .
+            'and evento.post_status == "publish" ' .
             'and itt.taxonomy = "fornecedores" ';
 
         try {
@@ -146,6 +122,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'and detalhes.meta_value != "" ' .
+            'and evento.post_status == "publish" ' .
             'and itt.taxonomy = "pavilhao" ';
 
         try {
@@ -190,6 +167,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'and detalhes.meta_value != "" ' .
+            'and evento.post_status == "publish" ' .
             'and segmento.name not like "Destaque%" ' .
             'and itt.taxonomy = "produtos" ';
 
@@ -244,7 +222,8 @@ class Api {
             'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
-            'and detalhes.meta_value != "" ' .
+            'where detalhes.meta_value != "" ' .
+            'and evento.post_status == "publish" ' .
             'and evento.post_type = "servicos" ';
 
         try {
@@ -288,7 +267,8 @@ class Api {
             'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
-            'and detalhes.meta_value != "" ' .
+            'where detalhes.meta_value != "" ' .
+            'and evento.post_status == "publish" ' .
             'and evento.post_type = "noticia" ' .
             'group by evento.ID ' .
             'order by evento.ID desc';
@@ -334,6 +314,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'where detalhes.meta_value != "" ' .
+            'and evento.post_status == "publish" ' .
             'and segmento.name not like "Destaque%" ' .
             'and itt.taxonomy = "categorias_projetos" ' .
             'or itt.taxonomy = "tipos_projetos" ' .
