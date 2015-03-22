@@ -31,7 +31,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'where detalhes.meta_value != "" ' .
-            'and evento.post_status == "publish" ' .
+            'and evento.post_status = "publish" ' .
             'and evento.post_type = "feiras" ';
 
         try {
@@ -79,7 +79,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'where detalhes.meta_value != "" ' .
-            'and evento.post_status == "publish" ' .
+            'and evento.post_status = "publish" ' .
             'and itt.taxonomy = "fornecedores" ';
 
         try {
@@ -122,7 +122,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'and detalhes.meta_value != "" ' .
-            'and evento.post_status == "publish" ' .
+            'and evento.post_status = "publish" ' .
             'and itt.taxonomy = "pavilhao" ';
 
         try {
@@ -167,7 +167,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'and detalhes.meta_value != "" ' .
-            'and evento.post_status == "publish" ' .
+            'and evento.post_status = "publish" ' .
             'and segmento.name not like "Destaque%" ' .
             'and itt.taxonomy = "produtos" ';
 
@@ -223,7 +223,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'where detalhes.meta_value != "" ' .
-            'and evento.post_status == "publish" ' .
+            'and evento.post_status = "publish" ' .
             'and evento.post_type = "servicos" ';
 
         try {
@@ -268,7 +268,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'where detalhes.meta_value != "" ' .
-            'and evento.post_status == "publish" ' .
+            'and evento.post_status = "publish" ' .
             'and evento.post_type = "noticia" ' .
             'group by evento.ID ' .
             'order by evento.ID desc';
@@ -314,7 +314,7 @@ class Api {
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'where detalhes.meta_value != "" ' .
-            'and evento.post_status == "publish" ' .
+            'and evento.post_status = "publish" ' .
             'and segmento.name not like "Destaque%" ' .
             'and itt.taxonomy = "categorias_projetos" ' .
             'or itt.taxonomy = "tipos_projetos" ' .
