@@ -352,7 +352,10 @@ class Api {
 
     // PARAMETROS sem
     public function getEstandesAction(Request $request, Application $app) {
-        $return = array();
+        $return = array(
+            'estandes'  => array(),
+            'segmentos' => array()
+        );
 
         $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, detalhes.meta_key, detalhes.meta_value, segmento.name ' .
             'from imp_posts evento ' .
@@ -377,22 +380,29 @@ class Api {
                 if($id === 0) {
                     $id = $value['ID'];
                     $value['guid'] = $this->checkImg($value['guid']);
-                    array_push($return, $value);
+                    if(!in_array($value['name'], $return['segmentos'], true)){
+                        array_push($return['segmentos'], $value['name']);
+                    }
+                    array_push($return['estandes'], $value);
                 } else if($value['ID'] == $id){
                     if($value['meta_value'] != '') {
-                        $return[$count][$value['meta_key']] = $value['meta_value'];
+                        $return['estandes'][$count][$value['meta_key']] = $value['meta_value'];
                     }
                 } else {
                     $count++;
                     $id = $value['ID'];
                     $value['guid'] = $this->checkImg($value['guid']);
-                    array_push($return, $value);
+                    if(!in_array($value['name'], $return['segmentos'], true)){
+                        array_push($return['segmentos'], $value['name']);
+                    }
+                    array_push($return['estandes'], $value);
                 }
             }
 
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
+        sort($return['segmentos']);
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
