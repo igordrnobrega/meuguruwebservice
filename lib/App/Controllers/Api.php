@@ -178,7 +178,10 @@ class Api {
 
     // PARAMETROS sem
     public function getProdutosAction(Request $request, Application $app) {
-        $return = array();
+        $return = array(
+            'produtos'  => array(),
+            'segmentos' => array()
+        );
 
         $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
             'from imp_posts evento ' .
@@ -201,31 +204,37 @@ class Api {
                 if($id === 0) {
                     $id = $value['ID'];
                     $value['guid'] = $this->checkImg($value['guid']);
-                    array_push($return, $value);
+                    if(!in_array($value['name'], $return['segmentos'], true)){
+                        array_push($return['segmentos'], $value['name']);
+                    }
+                    array_push($return['produtos'], $value);
                 } else if($value['ID'] == $id){
                     if($value['meta_key'] == 'NomedaLoja') {
-                        $return[$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'post_title', $app);
+                        $return['produtos'][$count][$value['meta_key']] = $this->getPost($value['meta_value'], 'post_title', $app);
                         $postMetas = $this->getPostMeta($value['meta_value'], $app);
                         foreach ($postMetas as $keyPM => $valuePM) {
                             if(!$this->removeLixoWp($valuePM['meta_key'])) {
-                                $return[$count]['loja'][$valuePM['meta_key']] = $valuePM['meta_value'];
+                                $return['produtos'][$count]['loja'][$valuePM['meta_key']] = $valuePM['meta_value'];
                             }
                         }
                     } else {
-                        $return[$count][$value['meta_key']] = $value['meta_value'];
+                        $return['produtos'][$count][$value['meta_key']] = $value['meta_value'];
                     }
                 } else {
                     $count++;
                     $id = $value['ID'];
                     $value['guid'] = $this->checkImg($value['guid']);
-                    array_push($return, $value);
+                    if(!in_array($value['name'], $return['segmentos'], true)){
+                        array_push($return['segmentos'], $value['name']);
+                    }
+                    array_push($return['produtos'], $value);
                 }
             }
 
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
-
+        sort($return['segmentos']);
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
