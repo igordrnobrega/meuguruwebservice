@@ -234,7 +234,10 @@ class Api {
 
     // PARAMETROS sem
     public function getServicosAction(Request $request, Application $app) {
-        $return = array();
+        $return = array(
+            'servicos'  => array(),
+            'segmentos' => array()
+        );
 
         $sql = 'select evento.ID, evento.post_title, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
             'from imp_posts evento ' .
@@ -256,14 +259,20 @@ class Api {
                 if($id === 0) {
                     $id = $value['ID'];
                     $value['guid'] = $this->checkImg($value['guid']);
-                    array_push($return, $value);
+                    if(!in_array($value['name'], $return['segmentos'], true)){
+                        array_push($return['segmentos'], $value['name']);
+                    }
+                    array_push($return['servicos'], $value);
                 } else if($value['ID'] == $id){
-                    $return[$count][$value['meta_key']] = $value['meta_value'];
+                    $return['servicos'][$count][$value['meta_key']] = $value['meta_value'];
                 } else {
                     $count++;
                     $id = $value['ID'];
                     $value['guid'] = $this->checkImg($value['guid']);
-                    array_push($return, $value);
+                    if(!in_array($value['name'], $return['segmentos'], true)){
+                        array_push($return['segmentos'], $value['name']);
+                    }
+                    array_push($return['servicos'], $value);
                 }
             }
 
