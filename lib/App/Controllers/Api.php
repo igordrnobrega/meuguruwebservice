@@ -297,7 +297,10 @@ class Api {
 
     // PARAMETROS sem
     public function getNoticiasAction(Request $request, Application $app) {
-        $return = array();
+        $return = array(
+            'noticias'  => array(),
+            'segmentos' => array()
+        );
 
         $sql = 'select evento.ID, evento.post_title, evento.post_date, imagem.guid, segmento.name, GROUP_CONCAT(DISTINCT detalhes.meta_key SEPARATOR "/-/") as meta_key, GROUP_CONCAT(DISTINCT detalhes.meta_value SEPARATOR "/-/") as meta_value ' .
             'from imp_posts evento ' .
@@ -322,6 +325,10 @@ class Api {
                 $date = new \DateTime($value['post_date']);
                 $sqlResult[$key]['post_date'] = $date->format('d/m/Y');
 
+                if(!in_array($value['name'], $return['segmentos'], true)){
+                    array_push($return['segmentos'], $value['name']);
+                }
+
                 if(sizeof($meta_key) == sizeof($meta_value)) {
                     foreach ($meta_key as $keyM => $valueM) {
                         $sqlResult[$key][$valueM] = $meta_value[$keyM];
@@ -334,11 +341,13 @@ class Api {
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
+        sort($return['segmentos']);
+        $return['noticias'] = $sqlResult;
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
-        return new Response(json_encode($sqlResult), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
+        return new Response(json_encode($return), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
     }
 
     // PARAMETROS sem
