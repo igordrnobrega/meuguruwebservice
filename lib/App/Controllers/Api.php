@@ -80,7 +80,10 @@ class Api {
 
     // PARAMETROS sem
     public function getFornecedoresAction(Request $request, Application $app) {
-        $return = array();
+        $return = array(
+            'fornecedores'  => array(),
+            'segmentos'     => array()
+        );
 
         $sql = 'select evento.ID, evento.post_title, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
             'from imp_posts evento ' .
@@ -101,20 +104,23 @@ class Api {
             foreach ($sqlResult as $key => $value) {
                 if($id === 0) {
                     $id = $value['ID'];
-                    array_push($return, $value);
+                    array_push($return['fornecedores'], $value);
                 } else if($value['ID'] == $id){
-                    $return[$count][$value['meta_key']] = $value['meta_value'];
+                    $return['fornecedores'][$count][$value['meta_key']] = $value['meta_value'];
                 } else {
                     $count++;
                     $id = $value['ID'];
-                    array_push($return, $value);
+                    if(!in_array($value['name'], $return['segmentos'], true)){
+                        array_push($return['segmentos'], $value['name']);
+                    }
+                    array_push($return['fornecedores'], $value);
                 }
             }
 
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
-
+        sort($return['segmentos']);
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
@@ -288,6 +294,7 @@ class Api {
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
+        sort($return['segmentos']);
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
