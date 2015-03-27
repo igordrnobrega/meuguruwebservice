@@ -38,8 +38,26 @@ class Api {
             'and evento.post_status = "publish" ' .
             'and evento.post_type = "feiras" ';
 
+        $orderSql = 'select evento.ID ' .
+            'from imp_posts evento ' .
+            'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
+            'where detalhes.meta_value != "" ' .
+            'and evento.post_status = "publish" ' .
+            'and detalhes.meta_key = "dataInicial" ' .
+            'and evento.post_type = "feiras" ' .
+            'order by STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y") desc';
+
         try {
-            $sqlResult = $app['db']->fetchAll($sql);
+            $sqlResult      = $app['db']->fetchAll($sql);
+            $sqlResultOrder = $app['db']->fetchAll($orderSql);
+
+            $order = array(
+                '42200' => '42200'
+            );
+
+            foreach ($sqlResultOrder as $key => $value) {
+                $order[$value['ID']] = $value['ID'];
+            }
 
             $count = 0;
             $id = 0;
@@ -50,10 +68,12 @@ class Api {
                     if(!in_array($value['name'], $return['segmentos'], true)){
                         array_push($return['segmentos'], $value['name']);
                     }
-                    array_push($return['eventos'], $value);
+                    $order[$value['ID']] = $value;
+                    // array_push($return['eventos'], $value);
                 } else if($value['ID'] == $id){
                     if(!$this->removeLixoWp($value['meta_key'])) {
-                        $return['eventos'][$count][$value['meta_key']] = $value['meta_value'];
+                        $order[$value['ID']][$value['meta_key']] = $value['meta_value'];
+                        // $return['eventos'][$count][$value['meta_key']] = $value['meta_value'];
                     }
                 } else {
                     $count++;
@@ -62,7 +82,8 @@ class Api {
                         array_push($return['segmentos'], $value['name']);
                     }
                     $value['guid'] = $this->checkImg($value['guid']);
-                    array_push($return['eventos'], $value);
+                    $order[$value['ID']] = $value;
+                    // array_push($return['eventos'], $value);
                 }
             }
 
@@ -70,6 +91,7 @@ class Api {
             return $e->getMessage();
         }
         sort($return['segmentos']);
+        $return['eventos'] = $order;
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
