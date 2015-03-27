@@ -430,6 +430,7 @@ class Api {
             return $e->getMessage();
         }
         sort($return['segmentos']);
+        sort($return['posicoes']);
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
