@@ -156,7 +156,7 @@ class Api {
         sort($return['segmentos']);
 
 
-        foreach ($variable as $key => $value) {
+        foreach ($sqlResultAnun as $key => $value) {
             echo array_search($value, $return['fornecedores']);
         }
 
