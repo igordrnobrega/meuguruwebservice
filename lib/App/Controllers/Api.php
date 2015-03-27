@@ -157,8 +157,8 @@ class Api {
         var_dump($return['fornecedores']);
         foreach ($sqlResultAnun as $key => $value) {
             foreach ($return['fornecedores'] as $keyF => $valueF) {
-                if(array_search($value['ID'], $return['fornecedores'])) {
-                    $return['fornecedore'] = array($valueF) + $return['fornecedores'];
+                if(array_search($value['ID'], $valueF)) {
+                    $return['fornecedores'] = array($valueF) + $return['fornecedores'];
                 }
             }
         }
