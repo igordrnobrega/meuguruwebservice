@@ -361,10 +361,11 @@ class Api {
     public function getEstandesAction(Request $request, Application $app) {
         $return = array(
             'estandes'  => array(),
-            'segmentos' => array()
+            'segmentos' => array(),
+            'posicoes'  => array()
         );
 
-        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, detalhes.meta_key, detalhes.meta_value, segmento.name ' .
+        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, detalhes.meta_key, detalhes.meta_value, segmento.name, itt.taxonomy ' .
             'from imp_posts evento ' .
             'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
             'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
@@ -374,8 +375,6 @@ class Api {
             'where detalhes.meta_value != "" ' .
             'and evento.post_status = "publish" ' .
             'and segmento.name not like "Destaque%" ' .
-            'and itt.taxonomy = "categorias_projetos" ' .
-            'or itt.taxonomy = "tipos_projetos" ' .
             'and evento.post_type = "projetos" ';
 
         try {
@@ -387,11 +386,27 @@ class Api {
                 if($id === 0) {
                     $id = $value['ID'];
                     $value['guid'] = $this->checkImg($value['guid']);
+                    if($value['taxonomy'] == 'tipos_projetos') {
+                        if(!in_array($value['name'], $return['segmentos'], true)){
+                            array_push($return['posicoes'], $value['name']);
+                        }
+                    }
                     if(!in_array($value['name'], $return['segmentos'], true)){
                         array_push($return['segmentos'], $value['name']);
                     }
                     array_push($return['estandes'], $value);
                 } else if($value['ID'] == $id){
+                    if($value['taxonomy'] == 'tipos_projetos') {
+                        $return['estandes'][$count]['posicao'] = $value['name'];
+                        if(!in_array($value['name'], $return['segmentos'], true)){
+                            array_push($return['posicoes'], $value['name']);
+                        }
+                    } else if($value['taxonomy'] == 'categorias_projetos'){
+                        $return['estandes'][$count]['categoria'] = $value['name'];
+                        if(!in_array($value['name'], $return['segmentos'], true)){
+                            array_push($return['segmentos'], $value['name']);
+                        }
+                    }
                     if($value['meta_value'] != '') {
                         $return['estandes'][$count][$value['meta_key']] = $value['meta_value'];
                     }
@@ -399,6 +414,11 @@ class Api {
                     $count++;
                     $id = $value['ID'];
                     $value['guid'] = $this->checkImg($value['guid']);
+                    if($value['taxonomy'] == 'tipos_projetos') {
+                        if(!in_array($value['name'], $return['segmentos'], true)){
+                            array_push($return['posicoes'], $value['name']);
+                        }
+                    }
                     if(!in_array($value['name'], $return['segmentos'], true)){
                         array_push($return['segmentos'], $value['name']);
                     }
