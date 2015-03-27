@@ -22,7 +22,9 @@ class Api {
 
     public function getEventosAction(Request $request, Application $app) {
         $return = array(
-            'eventos'   => array(),
+            'eventos'   => array(
+                '42200' => '42200'
+            ),
             'segmentos' => array()
         );
         $segmento = array();
@@ -51,12 +53,8 @@ class Api {
             $sqlResult      = $app['db']->fetchAll($sql);
             $sqlResultOrder = $app['db']->fetchAll($orderSql);
 
-            $order = array(
-                '42200' => '42200'
-            );
-
             foreach ($sqlResultOrder as $key => $value) {
-                $order[$value['ID']] = $value['ID'];
+                $return['eventos'][$value['ID']] = $value['ID'];
             }
 
             $count = 0;
@@ -68,11 +66,11 @@ class Api {
                     if(!in_array($value['name'], $return['segmentos'], true)){
                         array_push($return['segmentos'], $value['name']);
                     }
-                    $order[$value['ID']] = $value;
+                    $return['eventos'][$id] = $value;
                     // array_push($return['eventos'], $value);
                 } else if($value['ID'] == $id){
                     if(!$this->removeLixoWp($value['meta_key'])) {
-                        $order[$value['ID']][$value['meta_key']] = $value['meta_value'];
+                        $return['eventos'][$id][$value['meta_key']] = $value['meta_value'];
                         // $return['eventos'][$count][$value['meta_key']] = $value['meta_value'];
                     }
                 } else {
@@ -82,7 +80,7 @@ class Api {
                         array_push($return['segmentos'], $value['name']);
                     }
                     $value['guid'] = $this->checkImg($value['guid']);
-                    $order[$value['ID']] = $value;
+                    $return['eventos'][$id] = $value;
                     // array_push($return['eventos'], $value);
                 }
             }
@@ -91,7 +89,6 @@ class Api {
             return $e->getMessage();
         }
         sort($return['segmentos']);
-        $return['eventos'] = $order;
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
