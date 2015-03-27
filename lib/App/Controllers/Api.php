@@ -390,7 +390,7 @@ class Api {
                 } else if($value['ID'] == $id){
                     if($value['taxonomy'] == 'tipos_projetos') {
                         $return['estandes'][$count]['posicao'] = $value['name'];
-                        if(!in_array($value['name'], $return['segmentos'], true)){
+                        if(!in_array($value['name'], $return['posicoes'], true)){
                             array_push($return['posicoes'], $value['name']);
                         }
                     } else if($value['taxonomy'] == 'categorias_projetos'){
