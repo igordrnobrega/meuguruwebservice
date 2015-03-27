@@ -122,8 +122,15 @@ class Api {
             'and evento.post_status = "publish" ' .
             'and itt.taxonomy = "fornecedores" ';
 
+        $sqlAnunciantes = 'select evento.ID ' .
+            'from imp_posts evento ' .
+            'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
+            'where detalhes.meta_key = "anuncianteFornecedores" ' .
+            'and detalhes.meta_value = "Sim"';
+
         try {
-            $sqlResult = $app['db']->fetchAll($sql);
+            $sqlResult      = $app['db']->fetchAll($sql);
+            $sqlResultAnun  = $app['db']->fetchAll($sqlAnunciantes);
 
             $count = 0;
             $id = 0;
@@ -147,6 +154,14 @@ class Api {
             return $e->getMessage();
         }
         sort($return['segmentos']);
+
+
+        foreach ($variable as $key => $value) {
+            echo array_search($value, $return['fornecedores']);
+        }
+
+        die;
+
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
