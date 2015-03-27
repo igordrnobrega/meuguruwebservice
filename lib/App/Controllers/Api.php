@@ -90,6 +90,14 @@ class Api {
         }
         sort($return['segmentos']);
 
+        foreach ($return['order'] as $keyO => $valueO) {
+            foreach ($return['eventos'] as $key => $value) {
+                if($valueO == $value['ID']) {
+                    $return['order'][$keyO] = $value;
+                }
+            }
+        }
+
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
