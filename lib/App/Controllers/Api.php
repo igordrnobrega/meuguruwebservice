@@ -157,7 +157,7 @@ class Api {
 
 
         foreach ($sqlResultAnun as $key => $value) {
-            echo $value;
+            var_dump($value);
             echo array_search($value, $return['fornecedores']);
         }
 
