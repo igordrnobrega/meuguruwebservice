@@ -155,10 +155,13 @@ class Api {
         }
         sort($return['segmentos']);
 
-
         foreach ($sqlResultAnun as $key => $value) {
             var_dump($value['ID']);
-            echo array_search($value['ID'], $return['fornecedores']);
+            foreach ($return['fornecedores'] as $keyF => $valueF) {
+                if(array_search($value['ID'], $return['fornecedores'])) {
+                    $return['fornecedore'] = array($valueF) + $return['fornecedores'];
+                }
+            }
         }
 
         die;
