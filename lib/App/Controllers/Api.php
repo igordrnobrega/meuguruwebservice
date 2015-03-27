@@ -22,11 +22,10 @@ class Api {
 
     public function getEventosAction(Request $request, Application $app) {
         $return = array(
-            'eventos'   => array(),
+            'eventos'     => array(),
             'segmentos' => array(),
-            'order'     => array()
         );
-        $segmento = array();
+        $eventos = array();
 
         $sql = 'select evento.ID, evento.post_title, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
             'from imp_posts evento ' .
@@ -52,12 +51,12 @@ class Api {
             $sqlResult      = $app['db']->fetchAll($sql);
             $sqlResultOrder = $app['db']->fetchAll($orderSql);
 
-            $return['order'] = array(
+            $return['eventos'] = array(
                 '42200'
             );
 
             foreach ($sqlResultOrder as $key => $value) {
-                array_push($return['order'], $value['ID']);
+                array_push($return['eventos'], $value['ID']);
             }
 
             $count = 0;
@@ -69,10 +68,10 @@ class Api {
                     if(!in_array($value['name'], $return['segmentos'], true)){
                         array_push($return['segmentos'], $value['name']);
                     }
-                    array_push($return['eventos'], $value);
+                    array_push($eventos, $value);
                 } else if($value['ID'] == $id){
                     if(!$this->removeLixoWp($value['meta_key'])) {
-                        $return['eventos'][$count][$value['meta_key']] = $value['meta_value'];
+                        $eventos[$count][$value['meta_key']] = $value['meta_value'];
                     }
                 } else {
                     $count++;
@@ -81,7 +80,7 @@ class Api {
                         array_push($return['segmentos'], $value['name']);
                     }
                     $value['guid'] = $this->checkImg($value['guid']);
-                    array_push($return['eventos'], $value);
+                    array_push($eventos, $value);
                 }
             }
 
@@ -90,10 +89,10 @@ class Api {
         }
         sort($return['segmentos']);
 
-        foreach ($return['order'] as $keyO => $valueO) {
-            foreach ($return['eventos'] as $key => $value) {
+        foreach ($return['eventos'] as $keyO => $valueO) {
+            foreach ($eventos as $key => $value) {
                 if($valueO == $value['ID']) {
-                    $return['order'][$keyO] = $value;
+                    $return['eventos'][$keyO] = $value;
                 }
             }
         }
