@@ -22,10 +22,9 @@ class Api {
 
     public function getEventosAction(Request $request, Application $app) {
         $return = array(
-            'eventos'   => array(
-                '42200' => '42200'
-            ),
-            'segmentos' => array()
+            'eventos'   => array(),
+            'segmentos' => array(),
+            'order'     => array()
         );
         $segmento = array();
 
@@ -53,8 +52,12 @@ class Api {
             $sqlResult      = $app['db']->fetchAll($sql);
             $sqlResultOrder = $app['db']->fetchAll($orderSql);
 
+            $return['order'] = array(
+                '42200'
+            );
+
             foreach ($sqlResultOrder as $key => $value) {
-                $return['eventos'][$value['ID']] = $value['ID'];
+                array_push($return['order'], $value['ID']);
             }
 
             $count = 0;
@@ -66,12 +69,10 @@ class Api {
                     if(!in_array($value['name'], $return['segmentos'], true)){
                         array_push($return['segmentos'], $value['name']);
                     }
-                    $return['eventos'][$id] = $value;
-                    // array_push($return['eventos'], $value);
+                    array_push($return['eventos'], $value);
                 } else if($value['ID'] == $id){
                     if(!$this->removeLixoWp($value['meta_key'])) {
-                        $return['eventos'][$id][$value['meta_key']] = $value['meta_value'];
-                        // $return['eventos'][$count][$value['meta_key']] = $value['meta_value'];
+                        $return['eventos'][$count][$value['meta_key']] = $value['meta_value'];
                     }
                 } else {
                     $count++;
@@ -80,8 +81,7 @@ class Api {
                         array_push($return['segmentos'], $value['name']);
                     }
                     $value['guid'] = $this->checkImg($value['guid']);
-                    $return['eventos'][$id] = $value;
-                    // array_push($return['eventos'], $value);
+                    array_push($return['eventos'], $value);
                 }
             }
 
