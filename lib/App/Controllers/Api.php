@@ -154,15 +154,16 @@ class Api {
             return $e->getMessage();
         }
         sort($return['segmentos']);
-
+        var_dump($return['fornecedores']);
         foreach ($sqlResultAnun as $key => $value) {
-            var_dump($value['ID']);
             foreach ($return['fornecedores'] as $keyF => $valueF) {
                 if(array_search($value['ID'], $return['fornecedores'])) {
                     $return['fornecedore'] = array($valueF) + $return['fornecedores'];
                 }
             }
         }
+
+        var_dump($return['fornecedores']);
 
         die;
 
