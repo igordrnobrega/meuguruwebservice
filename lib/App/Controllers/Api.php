@@ -154,7 +154,7 @@ class Api {
             return $e->getMessage();
         }
         sort($return['segmentos']);
-        var_dump($return['fornecedores']);
+
         foreach ($sqlResultAnun as $key => $value) {
             foreach ($return['fornecedores'] as $keyF => $valueF) {
                 if(array_search($value['ID'], $valueF)) {
@@ -162,10 +162,6 @@ class Api {
                 }
             }
         }
-
-        var_dump($return['fornecedores']);
-
-        die;
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
