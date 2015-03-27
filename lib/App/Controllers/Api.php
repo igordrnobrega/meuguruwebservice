@@ -386,14 +386,6 @@ class Api {
                 if($id === 0) {
                     $id = $value['ID'];
                     $value['guid'] = $this->checkImg($value['guid']);
-                    if($value['taxonomy'] == 'tipos_projetos') {
-                        if(!in_array($value['name'], $return['segmentos'], true)){
-                            array_push($return['posicoes'], $value['name']);
-                        }
-                    }
-                    if(!in_array($value['name'], $return['segmentos'], true)){
-                        array_push($return['segmentos'], $value['name']);
-                    }
                     array_push($return['estandes'], $value);
                 } else if($value['ID'] == $id){
                     if($value['taxonomy'] == 'tipos_projetos') {
@@ -414,14 +406,6 @@ class Api {
                     $count++;
                     $id = $value['ID'];
                     $value['guid'] = $this->checkImg($value['guid']);
-                    if($value['taxonomy'] == 'tipos_projetos') {
-                        if(!in_array($value['name'], $return['segmentos'], true)){
-                            array_push($return['posicoes'], $value['name']);
-                        }
-                    }
-                    if(!in_array($value['name'], $return['segmentos'], true)){
-                        array_push($return['segmentos'], $value['name']);
-                    }
                     array_push($return['estandes'], $value);
                 }
             }
