@@ -100,7 +100,9 @@ class Api {
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
-        return new Response(json_encode($return), 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
+        $op = ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'];
+
+        return new Response(json_encode($return), 200, $op);
 
     }
 
