@@ -478,7 +478,7 @@ class Api {
         return new Response(json_encode($return), 200, $op);
     }
 
-    public function getFavoritosAction(Request $request, Application $app) {
+    public function postFavoritosAction(Request $request, Application $app) {
         $return = array(
             // 'data' => $request->request->get('data')
         );
