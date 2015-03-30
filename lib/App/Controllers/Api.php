@@ -479,9 +479,9 @@ class Api {
     }
 
     public function getFavoritosAction(Request $request, Application $app) {
-        $return = array();
-
-        var_dump($request->request->get('data'));
+        $return = array(
+            'data' => $request->request->get('data')
+        );
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
