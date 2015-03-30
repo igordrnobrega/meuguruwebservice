@@ -479,6 +479,7 @@ class Api {
     }
 
     public function getFavoritosAction(Request $request, Application $app) {
+        $return = array();
 
         var_dump($request->request->get('data'));
 
