@@ -479,16 +479,16 @@ class Api {
     }
 
     public function postFavoritosAction(Request $request, Application $app) {
-        // $return = array(
+        $return = array(
             // 'data' => $request->request->get('data')
-        // );
+        );
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
-        // $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
+        $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
 
-        // return new Response(json_encode($return), 200, $op);
+        return new Response(json_encode($return), 200, $op);
 
         return true;
     }
