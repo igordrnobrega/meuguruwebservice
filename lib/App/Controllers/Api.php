@@ -480,7 +480,7 @@ class Api {
 
     public function postFavoritosAction(Request $request, Application $app) {
         $return = array(
-            // 'data' => $request->request->get('data')
+            'data' => $request->request->get('data')
         );
 
         // Useful to return the newly added details
