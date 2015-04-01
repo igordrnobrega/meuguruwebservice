@@ -17,5 +17,3 @@ $app->get('/produtos', 'App\\Controllers\\Api::getProdutosAction');
 $app->get('/servicos', 'App\\Controllers\\Api::getServicosAction');
 $app->get('/noticias', 'App\\Controllers\\Api::getNoticiasAction');
 $app->get('/estandes', 'App\\Controllers\\Api::getEstandesAction');
-
-$app->post('/favoritos', 'App\\Controllers\\Api::postFavoritosAction');
