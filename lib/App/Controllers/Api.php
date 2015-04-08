@@ -157,13 +157,19 @@ class Api {
         }
         sort($return['segmentos']);
 
-        foreach ($sqlResultAnun as $key => $value) {
-            foreach ($return['fornecedores'] as $keyF => $valueF) {
-                if(array_search($value['ID'], $valueF)) {
-                    $return['fornecedores'] = array($valueF) + $return['fornecedores'];
+        $anunciantes = array();
+
+        foreach ($sqlResultAnun as $value) {
+            foreach ($return['fornecedores'] as $key => $valueF) {
+                if($value['ID'] == $valueF['ID']) {
+                    $valueF['isAnunciante'] = true;
+                    array_push($anunciantes, $valueF);
+                    unset($return['fornecedores'][$key]);
                 }
             }
         }
+
+        array_unshift($return['fornecedores'], $anunciantes);
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
