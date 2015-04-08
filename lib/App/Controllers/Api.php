@@ -400,6 +400,9 @@ class Api {
                 if(sizeof($meta_key) == sizeof($meta_value)) {
                     foreach ($meta_key as $keyM => $valueM) {
                         $sqlResult[$key][$valueM] = $meta_value[$keyM];
+                        if($valueM == '_thumbnail_id'){
+                            $sqlResult[$key][$valueM] = $this->getPost($meta_value[$keyM], 'guid', $app);
+                        }
                     }
                 }
                 unset($sqlResult[$key]['$meta_key']);
