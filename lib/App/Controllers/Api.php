@@ -169,7 +169,10 @@ class Api {
             }
         }
 
-        array_unshift($return['fornecedores'], $anunciantes);
+        foreach ($anunciantes as $value) {
+            array_unshift($return['fornecedores'], $value);
+        }
+
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
