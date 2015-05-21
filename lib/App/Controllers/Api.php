@@ -45,7 +45,12 @@ class Api {
             'and evento.post_status = "publish" ' .
             'and detalhes.meta_key = "dataInicial" ' .
             'and evento.post_type = "feiras" ' .
-            'order by STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y") desc, evento.post_title asc';
+            'and year(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) >= year(Now()) '.
+            'order by ' .
+            'CASE WHEN MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) = MONTH(NOW()) '.
+            'AND YEAR(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) = YEAR(NOW()) THEN 0 ' .
+            'ELSE 1 ' .
+            'END, month(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) desc, STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y") asc';
 
         try {
             $sqlResult      = $app['db']->fetchAll($sql);
