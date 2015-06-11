@@ -14,10 +14,10 @@ $app['debug'] = true;
 $app['config'] = array(
     'database' => array(
         'driver'   => 'pdo_mysql',
-        'dbname'   => 'meuguru_dev',
+        'dbname'   => 'meuguru_web',
         'host'     => '177.54.144.49',
-        'user'     => 'meuguru_guru',
-        'password' => 'GURU@K2@mySQL',
+        'user'     => 'meuguru_abril',
+        'password' => 'Nova2015Guru20',
         'charset'  => 'UTF8',
         'port'     => 3306
     )
