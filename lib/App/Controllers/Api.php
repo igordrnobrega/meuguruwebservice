@@ -386,7 +386,7 @@ class Api {
             'and evento.post_status = "publish" ' .
             'and evento.post_type = "noticia" ' .
             'group by evento.ID ' .
-            'order by evento.ID desc';
+            'order by evento.post_date desc';
 
         try {
             $sqlResult = $app['db']->fetchAll($sql);
