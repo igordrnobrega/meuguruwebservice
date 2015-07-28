@@ -38,29 +38,43 @@ class Api {
             'and evento.post_status = "publish" ' .
             'and evento.post_type = "feiras" ';
 
-        $orderSql = 'select evento.ID ' .
-            'from imp_posts evento ' .
-            'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
-            'where detalhes.meta_value != "" ' .
-            'and evento.post_status = "publish" ' .
-            'and detalhes.meta_key = "dataInicial" ' .
-            'and evento.post_type = "feiras" ' .
-            'and year(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) >= year(Now()) '.
-            'order by ' .
-            'CASE WHEN MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) = MONTH(NOW()) '.
-            'AND YEAR(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) = YEAR(NOW()) THEN 0 ' .
-            'ELSE 1 ' .
-            'END, month(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) desc, STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y") asc';
+        $orderCurrentSql = 'select evento.ID'.
+            'from imp_posts evento '.
+            'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID '.
+            'where detalhes.meta_value != "" '.
+            'and evento.post_status = "publish" '.
+            'and detalhes.meta_key = "dataInicial" '.
+            'and evento.post_type = "feiras" '.
+            'and MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) = MONTH(NOW())'.
+            'order by '.
+            'DAY(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) DESC';
+
+        $orderSql = 'select evento.ID'.
+            'from imp_posts evento '.
+            'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID '.
+            'where detalhes.meta_value != "" '.
+            'and evento.post_status = "publish" '.
+            'and detalhes.meta_key = "dataInicial" '.
+            'and evento.post_type = "feiras" '.
+            'and MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) > MONTH(NOW())'.
+            'order by '.
+            'MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) ASC,' .
+            'DAY(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) ASC';
 
         try {
-            $sqlResult      = $app['db']->fetchAll($sql);
-            $sqlResultOrder = $app['db']->fetchAll($orderSql);
+            $sqlResult              = $app['db']->fetchAll($sql);
+            $sqlResultCurrentOrder  = $app['db']->fetchAll($orderCurrentSql);
+            $sqlResultOrder         = $app['db']->fetchAll($orderSql);
 
             $return['eventos'] = array(
                 '42200'
             );
 
             foreach ($sqlResultOrder as $key => $value) {
+                array_push($sqlResultCurrentOrder, $value);
+            }
+
+            foreach ($sqlResultCurrentOrder as $key => $value) {
                 array_push($return['eventos'], $value['ID']);
             }
 
