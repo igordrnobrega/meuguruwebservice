@@ -38,27 +38,27 @@ class Api {
             'and evento.post_status = "publish" ' .
             'and evento.post_type = "feiras" ';
 
-        $orderCurrentSql = 'select evento.ID'.
+        $orderCurrentSql = 'select evento.ID '.
             'from imp_posts evento '.
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID '.
             'where detalhes.meta_value != "" '.
             'and evento.post_status = "publish" '.
             'and detalhes.meta_key = "dataInicial" '.
             'and evento.post_type = "feiras" '.
-            'and MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) = MONTH(NOW())'.
+            'and MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) = MONTH(NOW()) '.
             'order by '.
             'DAY(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) DESC';
 
-        $orderSql = 'select evento.ID'.
+        $orderSql = 'select evento.ID '.
             'from imp_posts evento '.
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID '.
             'where detalhes.meta_value != "" '.
             'and evento.post_status = "publish" '.
             'and detalhes.meta_key = "dataInicial" '.
             'and evento.post_type = "feiras" '.
-            'and MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) > MONTH(NOW())'.
+            'and MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) > MONTH(NOW()) '.
             'order by '.
-            'MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) ASC,' .
+            'MONTH(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) ASC, ' .
             'DAY(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) ASC';
 
         try {
