@@ -78,6 +78,9 @@ class Api {
                 array_push($return['eventos'], $value['ID']);
             }
 
+            unset($sqlResultCurrentOrder);
+            unset($sqlResultOrder);
+
             $count = 0;
             $id = 0;
             foreach ($sqlResult as $key => $value) {
@@ -108,6 +111,8 @@ class Api {
         }
         sort($return['segmentos']);
 
+        unset($sqlResult);
+
         foreach ($return['eventos'] as $keyO => $valueO) {
             foreach ($eventos as $key => $value) {
                 if($valueO == $value['ID']) {
@@ -131,6 +136,7 @@ class Api {
             'fornecedores'  => array(),
             'segmentos'     => array()
         );
+
 
         $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
             'from imp_posts evento ' .
@@ -156,10 +162,7 @@ class Api {
             $count = 0;
             $id = 0;
             foreach ($sqlResult as $key => $value) {
-                if($id === 0) {
-                    $id = $value['ID'];
-                    array_push($return['fornecedores'], $value);
-                } else if($value['ID'] == $id){
+                if($value['ID'] == $id){
                     $return['fornecedores'][$count][$value['meta_key']] = $value['meta_value'];
                 } else {
                     $count++;
@@ -175,23 +178,33 @@ class Api {
             return $e->getMessage();
         }
         sort($return['segmentos']);
-
+        unset($sqlResult);
         $anunciantes = array();
 
-        foreach ($sqlResultAnun as $value) {
-            foreach ($return['fornecedores'] as $key => $valueF) {
-                if($value['ID'] == $valueF['ID']) {
-                    $valueF['isAnunciante'] = true;
-                    array_push($anunciantes, $valueF);
-                    unset($return['fornecedores'][$key]);
+        foreach ($sqlResultAnun as $key => $value) {
+            foreach ($return['fornecedores'] as $keyF => $valueF) {
+                if (array_key_exists('ID', $valueF)) {
+                    if($value['ID'] == $valueF['ID']) {
+                        $valueF['isAnunciante'] = true;
+                        array_push($anunciantes, $valueF);
+                        unset($return['fornecedores'][$keyF]);
+                    }
                 }
+            }
+        }
+
+        $id = 0;
+        foreach ($anunciantes as $key => $value) {
+            if ($value['ID'] == $id) {
+                unset($anunciantes[$key]);
+            } else {
+                 $id = $value['ID'];
             }
         }
 
         foreach ($anunciantes as $value) {
             array_unshift($return['fornecedores'], $value);
         }
-
 
         // Useful to return the newly added details
         // HTTP_CREATED = 200
