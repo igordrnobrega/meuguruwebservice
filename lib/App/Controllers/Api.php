@@ -27,17 +27,6 @@ class Api {
         );
         $eventos = array();
 
-        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
-            'from imp_posts evento ' .
-            'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
-            'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
-            'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
-            'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
-            'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
-            'where detalhes.meta_value != "" ' .
-            'and evento.post_status = "publish" ' .
-            'and evento.post_type = "feiras" ';
-
         $orderCurrentSql = 'select evento.ID '.
             'from imp_posts evento '.
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID '.
@@ -62,7 +51,6 @@ class Api {
             'DAY(STR_TO_DATE(detalhes.meta_value, "%d/%m/%Y")) ASC';
 
         try {
-            // $sqlResult              = $app['db']->fetchAll($sql);
             $sqlResultCurrentOrder  = $app['db']->fetchAll($orderCurrentSql);
             $sqlResultOrder         = $app['db']->fetchAll($orderSql);
 
@@ -81,47 +69,46 @@ class Api {
             unset($sqlResultCurrentOrder);
             unset($sqlResultOrder);
 
+            $count = 0;
             foreach ($return['eventos'] as $key => $value) {
-                $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
-                    'from imp_posts evento ' .
-                    'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
-                    'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
-                    'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
-                    'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
-                    'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
-                    'where detalhes.meta_value != "" ' .
-                    'and evento.post_status = "publish" ' .
-                    'and evento.post_type = "feiras" ' .
-                    'and evento.ID = ' . $value;
+                if ($value != '42200') {
+                    $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
+                        'from imp_posts evento ' .
+                        'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
+                        'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
+                        'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
+                        'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
+                        'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
+                        'where detalhes.meta_value != "" ' .
+                        'and evento.post_status = "publish" ' .
+                        'and evento.post_type = "feiras" ' .
+                        'and evento.ID = ' . $value;
 
-                $sqlResult              = $app['db']->fetchAll($sql);
+                    $sqlResult = $app['db']->fetchAll($sql);
 
-                $count = 0;
-                $id = 0;
-                foreach ($sqlResult as $key => $value) {
-                    if($id === 0) {
-                        $id = $value['ID'];
-                        $value['guid'] = $this->checkImg($value['guid']);
-                        if(!in_array($value['name'], $return['segmentos'], true)){
-                            array_push($return['segmentos'], $value['name']);
+                    if (!empty($sqlResult)) {
+                        $id = 0;
+                        foreach ($sqlResult as $key => $value) {
+                            if($id === 0) {
+                                $id = $value['ID'];
+                                $value['guid'] = $this->checkImg($value['guid']);
+                                if(!in_array($value['name'], $return['segmentos'], true)){
+                                    array_push($return['segmentos'], $value['name']);
+                                }
+                                array_push($eventos, $value);
+                            } else {
+                                if(!$this->removeLixoWp($value['meta_key'])) {
+                                    $eventos[$count][$value['meta_key']] = $value['meta_value'];
+                                }
+                            }
                         }
-                        array_push($eventos, $value);
-                    } else if($value['ID'] == $id){
-                        if(!$this->removeLixoWp($value['meta_key'])) {
-                            $eventos[$count][$value['meta_key']] = $value['meta_value'];
-                        }
-                    } else {
                         $count++;
-                        $id = $value['ID'];
-                        if(!in_array($value['name'], $return['segmentos'], true)){
-                            array_push($return['segmentos'], $value['name']);
-                        }
-                        $value['guid'] = $this->checkImg($value['guid']);
-                        array_push($eventos, $value);
+                    } else {
+                        unset($return['eventos'][$key]);
                     }
+
                 }
             }
-
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
