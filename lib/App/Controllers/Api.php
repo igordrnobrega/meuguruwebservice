@@ -123,6 +123,8 @@ class Api {
             }
         }
 
+        $return['eventos'] = array_values($return['eventos']);
+
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
