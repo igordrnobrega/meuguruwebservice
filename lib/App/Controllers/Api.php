@@ -16,6 +16,8 @@ class Api {
      */
     private $request;
 
+    private static $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
+
     public function initialAction(Request $request, Application $app) {
         return 'Meu Guru API';
     }
@@ -128,9 +130,8 @@ class Api {
         // Useful to return the newly added details
         // HTTP_CREATED = 200
 
-        $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
 
-        return new Response(json_encode($return), 200, $op);
+        return new Response(json_encode($return), 200, self::$op);
 
     }
 
@@ -163,10 +164,15 @@ class Api {
             $sqlResult      = $app['db']->fetchAll($sql);
             $sqlResultAnun  = $app['db']->fetchAll($sqlAnunciantes);
 
+
             $count = 0;
             $id = 0;
             foreach ($sqlResult as $key => $value) {
-                if($value['ID'] == $id){
+                if ($id === 0) {
+                    $id = $value['ID'];
+                    $value['guid'] = $this->checkImg($value['guid']);
+                    array_push($return['fornecedores'], $value);
+                } else if($value['ID'] == $id){
                     $return['fornecedores'][$count][$value['meta_key']] = $value['meta_value'];
                 } else {
                     $count++;
@@ -210,12 +216,7 @@ class Api {
             array_unshift($return['fornecedores'], $value);
         }
 
-        // Useful to return the newly added details
-        // HTTP_CREATED = 200
-
-        $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
-
-        return new Response(json_encode($return), 200, $op);
+        return new Response(json_encode($return), 200, self::$op);
     }
 
     // PARAMETROS sem
@@ -267,12 +268,7 @@ class Api {
         }
         sort($return['segmentos']);
 
-        // Useful to return the newly added details
-        // HTTP_CREATED = 200
-
-        $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
-
-        return new Response(json_encode($return), 200, $op);
+        return new Response(json_encode($return), 200, self::$op);
     }
 
     // PARAMETROS sem
@@ -334,12 +330,8 @@ class Api {
             return $e->getMessage();
         }
         sort($return['segmentos']);
-        // Useful to return the newly added details
-        // HTTP_CREATED = 200
 
-        $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
-
-        return new Response(json_encode($return), 200, $op);
+        return new Response(json_encode($return), 200, self::$op);
     }
 
     // PARAMETROS sem
@@ -391,12 +383,7 @@ class Api {
         }
         sort($return['segmentos']);
 
-        // Useful to return the newly added details
-        // HTTP_CREATED = 200
-
-        $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
-
-        return new Response(json_encode($return), 200, $op);
+        return new Response(json_encode($return), 200, self::$op);
     }
 
     // PARAMETROS sem
@@ -451,12 +438,7 @@ class Api {
         sort($return['segmentos']);
         $return['noticias'] = $sqlResult;
 
-        // Useful to return the newly added details
-        // HTTP_CREATED = 200
-
-        $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
-
-        return new Response(json_encode($return), 200, $op);
+        return new Response(json_encode($return), 200, self::$op);
     }
 
     // PARAMETROS sem
@@ -518,12 +500,7 @@ class Api {
         sort($return['segmentos']);
         sort($return['posicoes']);
 
-        // Useful to return the newly added details
-        // HTTP_CREATED = 200
-
-        $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
-
-        return new Response(json_encode($return), 200, $op);
+        return new Response(json_encode($return), 200, self::$op);
     }
 
     protected function getPostMeta($id, $app) {
