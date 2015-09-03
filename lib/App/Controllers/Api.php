@@ -16,7 +16,8 @@ class Api {
      */
     private $request;
 
-    private static $op = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
+    private static $op      = array('Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*');
+    private static $rspType = 200;
 
     public function initialAction(Request $request, Application $app) {
         return 'Meu Guru API';
@@ -131,7 +132,7 @@ class Api {
         // HTTP_CREATED = 200
 
 
-        return new Response(json_encode($return), 200, self::$op);
+        return new Response(json_encode($return), self::$rspType, self::$op);
 
     }
 
@@ -142,17 +143,16 @@ class Api {
             'segmentos'     => array()
         );
 
-
-        $sql = 'select evento.ID, evento.post_title, evento.post_content, imagem.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
+        $sql = 'select distinct(evento.ID) ' .
             'from imp_posts evento ' .
-            'inner join imp_posts imagem on evento.ID = imagem.post_parent ' .
             'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
             'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
             'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
             'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
             'where detalhes.meta_value != "" ' .
             'and evento.post_status = "publish" ' .
-            'and itt.taxonomy = "fornecedores" ';
+            'and itt.taxonomy = "fornecedores" ' .
+            'order by evento.ID ASC';
 
         $sqlAnunciantes = 'select evento.ID ' .
             'from imp_posts evento ' .
@@ -161,26 +161,72 @@ class Api {
             'and detalhes.meta_value = "Sim"';
 
         try {
-            $sqlResult      = $app['db']->fetchAll($sql);
+            $sqlResultOrder = $app['db']->fetchAll($sql);
             $sqlResultAnun  = $app['db']->fetchAll($sqlAnunciantes);
 
-
-            $count = 0;
-            $id = 0;
-            foreach ($sqlResult as $key => $value) {
-                if ($id === 0) {
-                    $id = $value['ID'];
-                    $value['guid'] = $this->checkImg($value['guid']);
-                    array_push($return['fornecedores'], $value);
-                } else if($value['ID'] == $id){
-                    $return['fornecedores'][$count][$value['meta_key']] = $value['meta_value'];
-                } else {
-                    $count++;
-                    $id = $value['ID'];
-                    if(!in_array($value['name'], $return['segmentos'], true)){
-                        array_push($return['segmentos'], $value['name']);
+            foreach ($sqlResultAnun as $keyA => $idA) {
+                foreach ($sqlResultOrder as $key => $id) {
+                    if ($idA['ID'] == $id['ID']) {
+                        unset($sqlResultOrder[$key]);
                     }
-                    array_push($return['fornecedores'], $value);
+                }
+                array_unshift($sqlResultOrder, $idA);
+            }
+
+            unset($sqlResultAnun);
+
+            foreach ($sqlResultOrder as $key => $value) {
+                $sql = 'select evento.ID, evento.post_title, evento.post_content, evento.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
+                    'from imp_posts evento ' .
+                    'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
+                    'inner join imp_term_taxonomy itt on itr.term_taxonomy_id = itt.term_taxonomy_id ' .
+                    'inner join imp_terms segmento on segmento.term_id = itt.term_id ' .
+                    'inner join imp_postmeta detalhes on detalhes.post_id = evento.ID ' .
+                    'where detalhes.meta_value != "" ' .
+                    'and evento.post_status = "publish" ' .
+                    'and itt.taxonomy = "fornecedores" ' .
+                    'and evento.ID = ' . $value['ID'];
+
+                $sqlResult = $app['db']->fetchAll($sql);
+
+                $count = 0;
+                $id = 0;
+                foreach ($sqlResult as $key => $value) {
+                    if ($id === 0) {
+                        $id = $value['ID'];
+                        $value['guid'] = $this->checkImg($value['guid']);
+                        if(!in_array($value['name'], $return['segmentos'], true)){
+                            array_push($return['segmentos'], $value['name']);
+                        }
+
+                        if (strpos($value['meta_key'], 'anuncianteFornecedores') === true) {
+                            $return['fornecedores'][$count]['isAnunciante'] = true;
+                        }
+
+                        array_push($return['fornecedores'], $value);
+                    } else if($value['ID'] == $id){
+                        if (strpos($value['meta_key'], 'anuncianteFornecedores') === true) {
+                            $return['fornecedores'][$count]['isAnunciante'] = true;
+                        }
+
+                        if(!in_array($value['name'], $return['segmentos'], true)){
+                            array_push($return['segmentos'], $value['name']);
+                        }
+                        if (strpos($return['fornecedores'][$count]['name'], $value['name']) === false) {
+                            $return['fornecedores'][$count]['name'] = $return['fornecedores'][$count]['name'] . ' | ' . $value['name'];
+                        }
+                        $return['fornecedores'][$count][$value['meta_key']] = $value['meta_value'];
+                    } else {
+                        $count++;
+                        $id = $value['ID'];
+                        if(!in_array($value['name'], $return['segmentos'], true)){
+                            array_push($return['segmentos'], $value['name']);
+                        }
+                        if (strpos($value['meta_key'], 'anuncianteFornecedores') === true) {
+                            $return['fornecedores'][$count]['isAnunciante'] = true;
+                        }
+                        array_push($return['fornecedores'], $value);
+                    }
                 }
             }
 
@@ -188,35 +234,8 @@ class Api {
             return $e->getMessage();
         }
         sort($return['segmentos']);
-        unset($sqlResult);
-        $anunciantes = array();
 
-        foreach ($sqlResultAnun as $key => $value) {
-            foreach ($return['fornecedores'] as $keyF => $valueF) {
-                if (array_key_exists('ID', $valueF)) {
-                    if($value['ID'] == $valueF['ID']) {
-                        $valueF['isAnunciante'] = true;
-                        array_push($anunciantes, $valueF);
-                        unset($return['fornecedores'][$keyF]);
-                    }
-                }
-            }
-        }
-
-        $id = 0;
-        foreach ($anunciantes as $key => $value) {
-            if ($value['ID'] == $id) {
-                unset($anunciantes[$key]);
-            } else {
-                 $id = $value['ID'];
-            }
-        }
-
-        foreach ($anunciantes as $value) {
-            array_unshift($return['fornecedores'], $value);
-        }
-
-        return new Response(json_encode($return), 200, self::$op);
+        return new Response(json_encode($return), self::$rspType, self::$op);
     }
 
     // PARAMETROS sem
@@ -268,7 +287,7 @@ class Api {
         }
         sort($return['segmentos']);
 
-        return new Response(json_encode($return), 200, self::$op);
+        return new Response(json_encode($return), self::$rspType, self::$op);
     }
 
     // PARAMETROS sem
@@ -331,7 +350,7 @@ class Api {
         }
         sort($return['segmentos']);
 
-        return new Response(json_encode($return), 200, self::$op);
+        return new Response(json_encode($return), self::$rspType, self::$op);
     }
 
     // PARAMETROS sem
@@ -383,7 +402,7 @@ class Api {
         }
         sort($return['segmentos']);
 
-        return new Response(json_encode($return), 200, self::$op);
+        return new Response(json_encode($return), self::$rspType, self::$op);
     }
 
     // PARAMETROS sem
@@ -438,7 +457,7 @@ class Api {
         sort($return['segmentos']);
         $return['noticias'] = $sqlResult;
 
-        return new Response(json_encode($return), 200, self::$op);
+        return new Response(json_encode($return), self::$rspType, self::$op);
     }
 
     // PARAMETROS sem
@@ -500,7 +519,7 @@ class Api {
         sort($return['segmentos']);
         sort($return['posicoes']);
 
-        return new Response(json_encode($return), 200, self::$op);
+        return new Response(json_encode($return), self::$rspType, self::$op);
     }
 
     protected function getPostMeta($id, $app) {
