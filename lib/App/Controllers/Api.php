@@ -175,7 +175,7 @@ class Api {
 
             unset($sqlResultAnun);
 
-            foreach ($sqlResultOrder as $key => $value) {
+            foreach ($sqlResultOrder as $keyO => $valueO) {
                 $sql = 'select evento.ID, evento.post_title, evento.post_content, evento.guid, segmento.name, detalhes.meta_key, detalhes.meta_value ' .
                     'from imp_posts evento ' .
                     'inner join imp_term_relationships itr on evento.ID = itr.object_id ' .
@@ -185,11 +185,10 @@ class Api {
                     'where detalhes.meta_value != "" ' .
                     'and evento.post_status = "publish" ' .
                     'and itt.taxonomy = "fornecedores" ' .
-                    'and evento.ID = ' . $value['ID'];
+                    'and evento.ID = ' . $valueO['ID'];
 
                 $sqlResult = $app['db']->fetchAll($sql);
 
-                $count = 0;
                 $id = 0;
                 foreach ($sqlResult as $key => $value) {
                     if ($id === 0) {
@@ -199,33 +198,23 @@ class Api {
                             array_push($return['segmentos'], $value['name']);
                         }
 
-                        if (strpos($value['meta_key'], 'anuncianteFornecedores') === true) {
-                            $return['fornecedores'][$count]['isAnunciante'] = true;
+                        if (strpos($value['meta_key'], 'anuncianteFornecedores') === 'Sim') {
+                            $return['fornecedores'][$keyO]['isAnunciante'] = true;
                         }
 
                         array_push($return['fornecedores'], $value);
                     } else if($value['ID'] == $id){
-                        if (strpos($value['meta_key'], 'anuncianteFornecedores') === true) {
-                            $return['fornecedores'][$count]['isAnunciante'] = true;
+                        if (strpos($value['meta_key'], 'anuncianteFornecedores') === 'Sim') {
+                            $return['fornecedores'][$keyO]['isAnunciante'] = true;
                         }
 
                         if(!in_array($value['name'], $return['segmentos'], true)){
                             array_push($return['segmentos'], $value['name']);
                         }
-                        if (strpos($return['fornecedores'][$count]['name'], $value['name']) === false) {
-                            $return['fornecedores'][$count]['name'] = $return['fornecedores'][$count]['name'] . ' | ' . $value['name'];
+                        if (strpos($return['fornecedores'][$keyO]['name'], $value['name']) === false) {
+                            $return['fornecedores'][$keyO]['name'] = $return['fornecedores'][$keyO]['name'] . ' | ' . $value['name'];
                         }
-                        $return['fornecedores'][$count][$value['meta_key']] = $value['meta_value'];
-                    } else {
-                        $count++;
-                        $id = $value['ID'];
-                        if(!in_array($value['name'], $return['segmentos'], true)){
-                            array_push($return['segmentos'], $value['name']);
-                        }
-                        if (strpos($value['meta_key'], 'anuncianteFornecedores') === true) {
-                            $return['fornecedores'][$count]['isAnunciante'] = true;
-                        }
-                        array_push($return['fornecedores'], $value);
+                        $return['fornecedores'][$keyO][$value['meta_key']] = $value['meta_value'];
                     }
                 }
             }
